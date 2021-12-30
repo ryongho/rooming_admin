@@ -15,7 +15,10 @@ use App\Http\Controllers\PolicyController;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('main');
+});
+Route::get('/contact_form', function () {
+    return view('contact_form');
 });
 
 Route::get('/policy/print', [PolicyController::class, 'print']);
