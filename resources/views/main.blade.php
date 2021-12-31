@@ -15,25 +15,25 @@
             }
             .total{
                 width:100%;
-                max-width:900px;
-                
+                max-width:800px;
                 padding:0px;
-
             }
             .main{
                 width:100%;
-                max-width:900px;
+                max-width:800px;
                 margin:0px auto;
+                padding:0px;
+                height:100%;
             }
             .main_img{
                 width:100%;
-                height:auto;
-                max-width:900px;
-                margin:0px auto;
+                float:left;
+                margin:0px;
+                padding:0px;
             }
             .top{
                 width:100%;
-                max-width:900px;
+                max-width:800px;
                 margin:20px auto;
 
             }
@@ -60,36 +60,22 @@
                 cursor:pointer;
                 z-index:1;
             }
-            .main_down{
-                width:100%;
-                height:388px;
-                max-width:900px;
-                z-index:1;
-                position:relative;
-                background:url('/images/main_02.png');
-                background-repeat:no-repeat;
-                background-position:center center;
-                background-size:contain;
-            }
             .btn_google{
-                float:right;
-                position:relative;
-                top:280px;
-                
-                width:15%;
-                min-width:100px;
+                width:50%;
+                float:left;
+                margin:0px;
+                padding:0px;
+            }
+            .btn_apple{
+                width:50%;
+                float:left;
+                margin:0px;
+                padding:0px;
+            }
+            a{
                 cursor:pointer;
             }
 
-            .btn_apple{
-                float:right;
-                position:relative;
-                top:330px;
-                
-                width:15%;
-                min-width:100px;
-                cursor:pointer;
-            }
 
 
         </style>
@@ -102,18 +88,11 @@
                 </div>
                 <div class="main">
                     <img src="/images/main_01.png" class="main_img"/>
-                </div>
-                <div class="main main_down">
-                    <a href="https://play.google.com/store/apps/details?id=link.rooming.app"><img src="/images/btn/btn_down_google.png" class="btn_google"/></a>
-                    <a href="https://apps.apple.com/kr/app/%EB%A3%A8%EB%B0%8D-rooming/id1591176190"><img src="/images/btn/btn_down_apple.png" class="btn_apple"/></a>
-                </div>
-                <div class="main">
+                    <img src="/images/main_02.png" class="main_img"/>
+                    <a href="https://play.google.com/store/apps/details?id=link.rooming.app"><img src="/images/main_02_01.png" class="btn_google"/></a>
+                    <a href="https://apps.apple.com/kr/app/%EB%A3%A8%EB%B0%8D-rooming/id1591176190"><img src="/images/main_02_02.png" class="btn_apple"/></a>
                     <img src="/images/main_03.png" class="main_img"/>
-                </div>
-                <div class="main">
                     <a href="/contact_form"><img src="/images/btn/contact.png" class="contact_img"/></a>
-                </div>
-                <div class="main">
                     <img src="/images/main_04.png" class="main_img"/>
                 </div>
             </total>

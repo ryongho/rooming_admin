@@ -20,6 +20,9 @@ Route::get('/', function () {
 Route::get('/contact_form', function () {
     return view('contact_form');
 });
+Route::get('/contact_regist', function () {
+    return view('contact_form');
+});
 
 Route::get('/policy/print', [PolicyController::class, 'print']);
 
