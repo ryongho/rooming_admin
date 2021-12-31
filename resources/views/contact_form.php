@@ -67,14 +67,13 @@
             }
             table{
                 margin:30px 0px;
-
+                width:100%;
             }
             .form{
-                width:67%;
-                max-width:530px;
+                max-width:80%;
                 background-color:white;
                 float:left;
-                margin:0px auto;
+                margin:0px 10%;
                 padding:0px;
             }
             th{
@@ -85,6 +84,7 @@
             }
             td{
                width:80%; 
+               padding-right:10%;
             }
             .contact_img{
                 margin:20px auto;
