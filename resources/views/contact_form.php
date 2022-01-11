@@ -111,66 +111,69 @@
                     <div class="form_div">
                         <div class="text_contact">CONTACT</div>
                         <div class="form">
+                        <form action="/regist" method="GET" id="form1">
                             <table>
                                 <tr>
                                 <th><label for="exampleFormControlInput1" class="form-label">숙소명</label></th>
                                     <td>
-                                        <input type="text" class="form-control" id="exampleFormControlInput1">
+                                        <input type="text" class="form-control" id="exampleFormControlInput1" name="hotel_name">
                                     </td>
                                 </tr>
                                 <tr>
                                     <th><label for="exampleFormControlInput2" class="form-label">숙소유형</label></th>
                                     <td>
-                                        <input type="text" class="form-control" id="exampleFormControlInput2">
+                                        <input type="text" class="form-control" id="exampleFormControlInput2" name="hotel_type">
                                     </td>
                                 </tr>
                                 <tr>
                                     <th><label for="exampleFormControlInput3" class="form-label">지역</label></th>
                                     <td>
-                                        <input type="text" class="form-control" id="exampleFormControlInput3">
+                                        <input type="text" class="form-control" id="exampleFormControlInput3"  name="local">
                                     </td>
                                 </tr>
                                 <tr>
                                     <th><label for="exampleFormControlInput4" class="form-label">홈페이지 / SNS</label></th>
                                     <td>
-                                        <input type="text" class="form-control" id="exampleFormControlInput4">
+                                        <input type="text" class="form-control" id="exampleFormControlInput4"  name="homepage">
                                     </td>
                                 </tr>
                                 <tr>
                                     <th><label for="exampleFormControlInput5" class="form-label">이메일</label></th>
                                     <td>
-                                        <input type="text" class="form-control" id="exampleFormControlInput5">
+                                        <input type="text" class="form-control" id="exampleFormControlInput5"  name="email">
                                     </td>
                                 </tr>
                                 <tr>
                                     <th><label for="exampleFormControlInput6" class="form-label">연락처</label></th>
                                     <td>
-                                        <input type="text" class="form-control" id="exampleFormControlInput6">
+                                        <input type="text" class="form-control" id="exampleFormControlInput6"  name="phone">
                                     </td>
                                 </tr>
                                 <tr>
                                     <th><label for="exampleFormControlInput7" class="form-label">문의 분류</label></th>
                                     <td>
-                                        <input type="text" class="form-control" id="exampleFormControlInput7">
+                                        <input type="text" class="form-control" id="exampleFormControlInput7"  name="type">
                                     </td>
                                 </tr>
                                 <tr>
                                     <th><label for="exampleFormControlInput8" class="form-label">문의 제목</label></th>
                                     <td>
-                                        <input type="text" class="form-control" id="exampleFormControlInput8">
+                                        <input type="text" class="form-control" id="exampleFormControlInput8"  name="title">
                                     </td>
                                 </tr>
                                 <tr>
                                     <th><label for="exampleFormControlInput9" class="form-label">문의 내용</label></th>
                                     <td>
-                                    <textarea class="form-control" id="exampleFormControlInput9" rows="10"></textarea>
+                                    <textarea class="form-control" id="exampleFormControlInput9" rows="10"  name="content"></textarea>
                                     </td>
                                 </tr>
                             </table>
+                            
 
                             <div class="main">
-                                <a href="/contact_form"><img src="/images/btn/contact.png" class="contact_img"/></a>
+                                <a href="#" onclick="document.getElementById('form1').submit();"><img src="/images/btn/contact.png" class="contact_img"/></a>
                             </div>
+                            <form>
                         </div>
                     </div>
                     <img src="/images/main_04.png" class="main_img"/>
