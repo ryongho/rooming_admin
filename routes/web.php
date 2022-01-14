@@ -6,7 +6,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
-use App\Models\Email;
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exception;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -30,6 +33,9 @@ Route::get('/contact_regist', function () {
 });
 Route::get('/regist', function (Request $request) {
 
+
+    
+
     $email = new \stdClass;
     $email->email = "pm@dnsolution.kr";
     $email->content = "<br/><br/> 숙소이름 : ".$request->hotel_name;
@@ -45,10 +51,53 @@ Route::get('/regist', function (Request $request) {
 
     $email->title = "[제휴문의]".$request->title;
 
-    Email::send($email);
+
+    $title = $email->title; 
+        $subject = "=?EUC-KR?B?".base64_encode(iconv("UTF-8","EUC-KR",$title))."?=";
+        
+        $content = $email->content;
+        
+        $mail = new PHPMailer(true);         
+        $return = new \stdClass;
+        $result =  true;
+        
+        try {
+            //Server settings
+            $mail->isSMTP();                                            // Send using SMTP
+            $mail->Host       = env('MAIL_HOST');                    // Set the SMTP server to send through
+            $mail->SMTPAuth   = true;                                   // Enable SMTP authentication
+            $mail->Username   = env('MAIL_USERNAME');                     // SMTP username
+            $mail->Password   = env('MAIL_PASSWORD');                               // SMTP password
+            $mail->CharSet = 'utf-8'; 
+            $mail->Encoding = "base64";
+            $mail->SMTPSecure = 'ssl';          
+            $mail->Port       = env('MAIL_PORT');                                    // TCP port to connect to, use 465 for `PHPMailer::ENCRYPTION_SMTPS` above
+            
+
+            //Recipients
+            $mail->setFrom(env('MAIL_FROM_ADDRESS'), '루밍');
+
+            $mail->addAddress($email->email);     // Add a recipient
+            
+            // Content
+            $mail->isHTML(true);                                  // Set email format to HTML
+            $mail->Subject = $subject;
+            $mail->Body    = $content;
+
+            $email->state = $mail->send();
+
+            //echo 'Message has been sent';
+            //$result =  true;
+            echo("<script>alert('등록되었습니다. 담당자가 확인이 연락 드릴 예정입니다.');</script>");
+            echo("<script>window.location.href='/'</script>");
+        } catch (Exception $e) {
+            //echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+            $email->state = false;
+            echo("<script>alert('등록실패했습니다. 담당자에게 문의 하세요.');</script>");
+            echo("<script>window.location.href='/'</script>");
+        }
     
-    echo("<script>alert('등록되었습니다. 담당자가 확인이 연락 드릴 예정입니다.');</script>");
-    echo("<script>window.location.href='/'</script>");
+    
     
 });
 
