@@ -11,6 +11,7 @@ use App\Models\Reservation;
 use App\Models\Push;
 use App\Models\User;
 use App\Models\Sms;
+use App\Models\Email;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 
@@ -80,7 +81,14 @@ class ReservationController extends Controller
             $sms->content = $content;
             $sms->title = $title;
 
-            Sms::send($sms);
+            $partner_info = User::where('id', $hotel_info->partner_id)->first();
+
+            $email = new \stdClass;
+            $email->email = $partner_info->email;
+            $email->content = "안녕하세요. ".$hotel_info->name." 예약 안내 메일입니다.\n\n 예약 상품 : ".$goods->goods_name." \n예약번호 : ".$reservation->reservation_no."\n"."예약자 : ".$reservation->name."\n";
+            $email->title = "예약 안내 메일 입니다. ";
+
+            Email::send($email);
 
             $result = Push::insert([
                 'user_id'=> 1,

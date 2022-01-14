@@ -5,7 +5,7 @@
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => '41d655fde690b3efb91dad3b02518022429b557b',
+        'reference' => '2b2bbef41387b3272a2ebd9874e3adb1020fb8f4',
         'name' => 'laravel/laravel',
         'dev' => true,
     ),
@@ -418,7 +418,7 @@
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => '41d655fde690b3efb91dad3b02518022429b557b',
+            'reference' => '2b2bbef41387b3272a2ebd9874e3adb1020fb8f4',
             'dev_requirement' => false,
         ),
         'laravel/sail' => array(
@@ -645,6 +645,15 @@
             'aliases' => array(),
             'reference' => '6a467b8989322d92aa1c8bf2bebcc6e5c2ba55c0',
             'dev_requirement' => true,
+        ),
+        'phpmailer/phpmailer' => array(
+            'pretty_version' => 'v6.5.3',
+            'version' => '6.5.3.0',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../phpmailer/phpmailer',
+            'aliases' => array(),
+            'reference' => 'baeb7cde6b60b1286912690ab0693c7789a31e71',
+            'dev_requirement' => false,
         ),
         'phpoption/phpoption' => array(
             'pretty_version' => '1.8.0',

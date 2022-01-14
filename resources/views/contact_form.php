@@ -104,7 +104,7 @@
     <body>
             <total class="total">
                 <div class="top">
-                    <img src="/images/btn/logo.png" class="logo_img"/>
+                <a href="/"><img src="/images/btn/logo.png" class="logo_img"/></a>
                 </div>
                 <div class="main">
                     <img src="/images/sub_01.png" class="main_img"/>
