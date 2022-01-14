@@ -38,6 +38,8 @@ class Email extends Model
         $mail = new PHPMailer(true);         
         $return = new \stdClass;
         $result =  true;
+
+        $email->send_date = "";
         
         try {
             //Server settings
