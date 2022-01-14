@@ -74,8 +74,9 @@ class Email extends Model
             $email->state = false;
         }
         
-
-        Email::log_regist($email);
+        if($email->type != "contact"){
+            Email::log_regist($email);
+        }
         
     
     }

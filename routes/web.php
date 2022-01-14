@@ -31,7 +31,7 @@ Route::get('/contact_regist', function () {
 Route::get('/regist', function (Request $request) {
 
     $email = new \stdClass;
-    $email->email = "sales2@dnsolution.kr";
+    $email->email = "pm@dnsolution.kr";
     $email->content = "<br/><br/> 숙소이름 : ".$request->hotel_name;
     $email->content .= "<br/>숙소형태 : ".$request->hotel_type;
     $email->content .= "<br/>지역 : ".$request->local;
