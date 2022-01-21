@@ -192,11 +192,11 @@ class UserController extends Controller
         $email_cnt = User::where('email',$request->email)->count();
 
         if($email_cnt){
-            $return->usable = "Y";
+            $return->usable = "N";
             $return->msg = "사용중인 이메일";
             $return->email = $request->email;
         }else{
-            $return->usable = "N";
+            $return->usable = "Y";
             $return->msg = "사용가능 이메일";
             $return->email = $request->email;            
         }
@@ -242,11 +242,11 @@ class UserController extends Controller
         $nickname_cnt = User::where('nickname',$request->nickname)->count();
 
         if($nickname_cnt){
-            $return->usable = "Y";
+            $return->usable = "N";
             $return->msg = "사용중인 닉네임";
             $return->nickname = $request->nickname;
         }else{
-            $return->usable = "N";
+            $return->usable = "Y";
             $return->msg = "사용가능 닉네임";
             $return->nickname = $request->nickname;            
         }
