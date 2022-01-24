@@ -110,6 +110,16 @@ class GoodsController extends Controller
         }else if($request->orderby == "distance"){
             $orderby = "distance";
             $order = "asc";
+        }else if($request->orderby == "review"){
+            //$orderby = "review";
+            //$order = "desc";
+            $orderby = "distance";
+            $order = "asc";
+        }else if($request->orderby == "grade"){
+            //$orderby = "grade";
+            //$order = "desc";
+            $orderby = "distance";
+            $order = "asc";
         }
         
         $user_id = "s";

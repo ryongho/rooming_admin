@@ -7,6 +7,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Goods;
 use App\Models\Hotel;
+use App\Models\Room;
 use App\Models\Reservation;
 use App\Models\Push;
 use App\Models\User;
@@ -70,22 +71,35 @@ class ReservationController extends Controller
 
             $reservation = Reservation::where('id',$result)->first();
             $user_info = User::where('id',$user_id )->first();
-
             $hotel_info = Hotel::where('id',$goods->hotel_id)->first();
+            $room_info = Room::where('id',$goods->room_id)->first();
+            $partner_info = User::where('id', $hotel_info->partner_id)->first();
 
+            /*예약자 문자 발송 */
             $title = "[루밍 예약 입금안내]";
             $content = $user_info->name."님 아래 계좌로 입금해주시면 담당자 확인 후에 예약이 완료 됩니다.\n\n입금액 : ".number_format($goods->sale_price)."원 \n 입금계좌 : \n ".$hotel_info->account_number." ".$hotel_info->bank_name." (예금주 : ".$hotel_info->account_name.")";
-
             $sms = new \stdClass;
             $sms->phone = $user_info->phone;
             $sms->content = $content;
             $sms->title = $title;
 
-            $partner_info = User::where('id', $hotel_info->partner_id)->first();
+            SMS::send($sms);
 
+            /* 숙소 담당자 예약 확인 메일 */
             $email = new \stdClass;
             $email->email = $partner_info->email;
-            $email->content = "안녕하세요. ".$hotel_info->name." 예약 안내 메일입니다.\n\n 예약 상품 : ".$goods->goods_name." \n예약번호 : ".$reservation->reservation_no."\n"."예약자 : ".$reservation->name."\n";
+            $email->content = "안녕하세요. ".$hotel_info->name." 예약 안내 메일입니다.";
+            $email->content .="<table style='border:1px solid gray;'>";
+            $email->content .="<tr><td style='width:100px;border-right:1px solid gray;border-bottom:1px solid gray;'>예약번호</td><td style='width:400px;border-bottom:1px solid gray;'>".$reservation->reservation_no."</td></tr>";
+            $email->content .="<tr><td style='border-right:1px solid gray;border-bottom:1px solid gray;'>예약자</td><td style='border-bottom:1px solid gray;'> ".$reservation->name."(".$reservation->phone.")</td></tr>";
+            $email->content .="<tr><td style='border-right:1px solid gray;border-bottom:1px solid gray;'>예약 접수 시간</td><td style='border-bottom:1px solid gray;'>".Carbon::now()->format('Y-m-d H:i:s')."</td></tr>";
+            $email->content .="<tr><td style='border-right:1px solid gray;border-bottom:1px solid gray;'>상품명</td><td style='border-bottom:1px solid gray;'>".$goods->goods_name."</td></tr>";
+            $email->content .="<tr><td style='border-right:1px solid gray;border-bottom:1px solid gray;'>객실명</td><td style='border-bottom:1px solid gray;'>".$room_info->name."</td></tr>";
+            $email->content .="<tr><td style='border-right:1px solid gray;border-bottom:1px solid gray;'>체크인 / 체크아웃</td><td style='border-bottom:1px solid gray;'>".$reservation->start_date." ~ ".$reservation->start_date."</td></tr>";
+            $email->content .="<tr><td style='border-right:1px solid gray;border-bottom:1px solid gray;'>방문 순단</td><td style='border-bottom:1px solid gray;'>".$reservation->visit_way."</td></tr>";
+            $email->content .="<tr><td style='border-right:1px solid gray;border-bottom:1px solid gray;'>예약상태</td><td style='border-bottom:1px solid gray;'>예약대기</td></tr>";
+            $email->content .="<tr><td style='border-right:1px solid gray;'>결제 정보</td><td> 무통장 입금 : ".$reservation->price."</td></tr>";
+            $email->content .="</table>";
             $email->title = "예약 안내 메일 입니다. ";
 
             Email::send($email);
@@ -637,6 +651,7 @@ class ReservationController extends Controller
                                     'goods.sale_price as sale_price',
                                     'hotels.name as hotel_name',
                                     'hotels.tel as hotel_tel',
+                                    'hotels.id as hotel_id',
                                     'goods.id as goods_id',
                                     DB::raw('(select file_name from goods_images where goods_images.goods_id = goods.id order by order_no asc limit 1 ) as thumb_nail'),
                         )         
@@ -655,6 +670,25 @@ class ReservationController extends Controller
             $sms->content = $content;
 
             Sms::send($sms);
+
+            $hotel_info = Hotel::where('id',$res_info->hotel_id)->first();
+            $partner_info = User::where('id', $hotel_info->partner_id)->first();
+
+            /* 숙소 담당자 예약 확인 메일 */
+            $email = new \stdClass;
+            $email->email = $partner_info->email;
+            $email->content = "<img style='width:600px;' src='https://rooming-img.s3.ap-northeast-2.amazonaws.com/mail_images/IqdDeFzQKEQ2w3BnduT1Ijk7Zne6J0F49uEonW90.png'/>";
+            $email->content .= "<br/> 안녕하세요. ".$res_info->name." 고객님으로부터 입금 확인 요청이 왔습니다.";
+            $email->content .= "<br/>파트너사 관리자 계서는 입금확인 후 관리자페이지에서 예약확정을 해주세요.";
+            $email->content .="<table style='border:1px solid gray;'>";
+            $email->content .="<tr><td style='width:150px;border-right:1px solid gray;border-bottom:1px solid gray;'>예약번호</td><td style='width:450px;border-bottom:1px solid gray;'>".$res_info->reservation_no."</td></tr>";
+            $email->content .="<tr><td style='border-right:1px solid gray;border-bottom:1px solid gray;'>예약자</td><td style='border-bottom:1px solid gray;'> ".$res_info->name."(".$res_info->phone.")</td></tr>";
+            $email->content .="<tr><td style='border-right:1px solid gray;border-bottom:1px solid gray;'>입금확인 요청 시간</td><td style='border-bottom:1px solid gray;'>".Carbon::now()->format('Y-m-d H:i:s')."</td></tr>";
+            $email->content .="<tr><td style='border-right:1px solid gray;'>결제 정보</td><td> 무통장 입금 : ".$res_info->reservation_price."</td></tr>";
+            $email->content .="</table>";
+            $email->title = "입금 확인 요청 안내 메일 입니다. ";
+
+            Email::send($email);
 
             $return->status = "200";
             $return->msg = "예약 확인이 요청되었습니다." ;
