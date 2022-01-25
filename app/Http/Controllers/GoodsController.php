@@ -105,7 +105,7 @@ class GoodsController extends Controller
        
 
         if($request->orderby == 'price'){
-            $orderby = "goods.price";
+            $orderby = "goods.sale_price";
             $order = "asc";
         }else if($request->orderby == "distance"){
             $orderby = "distance";
