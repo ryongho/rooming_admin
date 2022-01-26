@@ -200,12 +200,12 @@ class GoodsController extends Controller
         }else if($request->orderby == "review"){
             //$orderby = "review";
             //$order = "desc";
-            $orderby = "distance";
+            $orderby = "goods.sale_price";
             $order = "asc";
         }else if($request->orderby == "grade"){
             //$orderby = "grade";
             //$order = "desc";
-            $orderby = "distance";
+            $orderby = "goods.sale_price";
             $order = "asc";
         }
        
