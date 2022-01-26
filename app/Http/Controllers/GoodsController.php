@@ -190,6 +190,27 @@ class GoodsController extends Controller
         $end_date = $request->end_date;
 
         $sale = $request->sale;
+
+        $orderby = "goods.id";
+        $order = "desc";
+
+        if($request->orderby == 'price'){
+            $orderby = "goods.sale_price";
+            $order = "asc";
+        }else if($request->orderby == "distance"){
+            $orderby = "distance";
+            $order = "asc";
+        }else if($request->orderby == "review"){
+            //$orderby = "review";
+            //$order = "desc";
+            $orderby = "distance";
+            $order = "asc";
+        }else if($request->orderby == "grade"){
+            //$orderby = "grade";
+            //$order = "desc";
+            $orderby = "distance";
+            $order = "asc";
+        }
        
         $rows = Goods::join('hotels', 'goods.hotel_id', '=', 'hotels.id')
                         ->join('rooms', 'goods.room_id', '=', 'rooms.id')
@@ -224,7 +245,7 @@ class GoodsController extends Controller
                         ->when($end_date, function ($query, $end_date) {
                             return $query->where('goods.end_date' ,">=", $end_date);
                         })
-                        ->orderBy('sale_price', 'asc')
+                        ->orderBy($orderby, $order)
                         ->get();
 
         $return = new \stdClass;
