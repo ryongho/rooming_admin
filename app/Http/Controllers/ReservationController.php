@@ -13,6 +13,7 @@ use App\Models\Push;
 use App\Models\User;
 use App\Models\Sms;
 use App\Models\Email;
+use App\Models\Quantity;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 
@@ -35,7 +36,25 @@ class ReservationController extends Controller
         
         $reservation_no = "R_".$now."_".$request->goods_id."_".$user_id;
 
-        $goods = Goods::where('id',$request->goods_id)->first();
+        $not_goods = array(); // 상품 수량 0인 상품                
+        
+        $dates = Quantity::where('date','>=', $request->start_date )
+        ->where('date','<', $request->end_date )
+        ->where('goods_id',$request->goods_id)
+        ->where('qty','<','1')
+        ->get();
+
+        if(count($dates)){
+            $i =0;
+            foreach($dates as $date){
+                $not_goods[$i] = $date['goods_id'];
+                $i++;
+            }   
+        }
+        
+
+        $goods = Goods::where('id',$request->goods_id)->whereNotIn('id',$not_goods)->first();
+        
         if(isset($goods)){
             $result = Reservation::insertGetId([
                 'user_id'=> $user_id ,
@@ -57,6 +76,7 @@ class ReservationController extends Controller
 
         }else{
             $result =  0;
+            $return->reason = "객실 수량 부족";
         }
             
         
@@ -67,8 +87,10 @@ class ReservationController extends Controller
             $return->msg = "success";
             $return->insert_id = $result ;
 
-            Goods::where('id',$request->goods_id)->update(['amount' => $goods->amount-1]);
-
+            Quantity::where('date','>=', $request->start_date )
+            ->where('date','<', $request->end_date )
+            ->where('goods_id',$request->goods_id)->decrement('qty');
+            
             $reservation = Reservation::where('id',$result)->first();
             $user_info = User::where('id',$user_id )->first();
             $hotel_info = Hotel::where('id',$goods->hotel_id)->first();
@@ -449,6 +471,11 @@ class ReservationController extends Controller
         }else{
             if($reservation_info->status == "W"){ // 예약 대기 상태인 경우 
                 $result = Reservation::where('id', $request->id)->where('user_id',$user_id)->update(['status' => 'C']); // 취소 확정
+                
+                Quantity::where('date','>=', $reservation_info->start_date )
+                ->where('date','<', $reservation_info->end_date )
+                ->where('goods_id',$reservation_info->goods_id)->increment('qty');
+
             }else{//입금 완료 상태
                 $result = Reservation::where('id', $request->id)->where('user_id',$user_id)->update(['status' => 'X']);// 취소 신청 - 관리자 확인후 취소 가능
 

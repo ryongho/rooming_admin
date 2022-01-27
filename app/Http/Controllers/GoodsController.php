@@ -133,9 +133,31 @@ class GoodsController extends Controller
         $start_date = $request->start_date;
         $end_date = $request->end_date;
 
+        
+        $not_goods = array();                
+       
+        if($start_date){
+            $dates = Quantity::where('date','>=', $start_date )
+            ->where('date','<', $end_date )
+            ->where('qty','<','1')
+            ->where('goods_id','>=',$s_no)
+            ->get();
+
+            if(count($dates)){
+                $i =0;
+                foreach($dates as $date){
+                    $not_goods[$i] = $date['goods_id'];
+                    $i++;
+                }
+                
+            }
+        }
+        
+
         $rows = Goods::join('hotels', 'goods.hotel_id', '=', 'hotels.id')
                         ->join('rooms', 'goods.room_id', '=', 'rooms.id')
-                        ->select(   'hotels.type as shop_type', 
+                        ->select(   'goods.id as goods_id', 
+                                    'hotels.type as shop_type', 
                                     'rooms.name as room_name',
                                     'hotels.name as hotel_name',
                                     'goods.goods_name as goods_name', 
@@ -158,6 +180,7 @@ class GoodsController extends Controller
                         )         
                         ->where('goods.id','>=',$s_no)
                         ->where('goods.sale','Y')
+                        ->whereNotIn('goods.id', $not_goods)
                         ->whereBetween('hotels.latitude', [$request->a_latitude, $request->b_latitude])
                         ->whereBetween('hotels.longtitude', [$request->a_longtitude, $request->b_longtitude])
                         ->when($start_date, function ($query, $start_date) {
@@ -170,6 +193,9 @@ class GoodsController extends Controller
                         //->where('end_date' ,">=", $request->end_date)
                         ->orderBy($orderby, $order)
                         ->limit($row)->get();
+
+        
+
 
         $return = new \stdClass;
 
@@ -208,7 +234,25 @@ class GoodsController extends Controller
             $orderby = "goods.sale_price";
             $order = "asc";
         }
+
+        $not_goods = array();                
        
+        if($start_date){
+            $dates = Quantity::where('date','>=', $start_date )
+            ->where('date','<', $end_date )
+            ->where('qty','<','1')
+            ->get();
+
+            if(count($dates)){
+                $i =0;
+                foreach($dates as $date){
+                    $not_goods[$i] = $date['goods_id'];
+                    $i++;
+                }
+                
+            }
+        }
+        
         $rows = Goods::join('hotels', 'goods.hotel_id', '=', 'hotels.id')
                         ->join('rooms', 'goods.room_id', '=', 'rooms.id')
                         ->select(   'hotels.type as shop_type', 
@@ -233,6 +277,7 @@ class GoodsController extends Controller
                                     DB::raw('(select count(grade) from reviews where reviews.goods_id = goods.id) as grade_cnt'),
                         )         
                         ->where('hotels.id','=',$hotel_id)
+                        ->whereNotIn('goods.id', $not_goods)
                         ->when($sale, function ($query, $sale) {
                             return $query->where('goods.sale' ,"=", $sale);
                         })
