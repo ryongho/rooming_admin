@@ -129,14 +129,12 @@ class ReservationController extends Controller
                     'created_at'=> Carbon::now(),
                 ]);
 
-                $return->status = "500";
-                $return->msg = "fail";
                 
     
                 
             }else{
-                $return->status = "200";
-                $return->msg = "success";
+                $return->status = "500";
+                $return->msg = "fail";
             }
 
         }else{
