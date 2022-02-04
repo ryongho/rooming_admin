@@ -65,7 +65,7 @@ class ReservationController extends Controller
                 'start_date'=> $request->start_date ,
                 'end_date'=> $request->end_date ,
                 'nights'=> $request->nights ,
-                'price'=> $goods->sale_price ,
+                'price'=> ($goods->sale_price * count($dates)) ,
                 'peoples'=> $request->peoples ,
                 'name'=> $request->name ,
                 'phone'=> $request->phone ,
