@@ -74,74 +74,77 @@ class ReservationController extends Controller
                 'created_at'=> Carbon::now(),
             ]);
 
+            if($result){ //DB 입력 성공
+
+                $return->status = "200";
+                $return->msg = "success";
+                $return->insert_id = $result ;
+    
+                Quantity::where('date','>=', $request->start_date )
+                ->where('date','<', $request->end_date )
+                ->where('goods_id',$request->goods_id)->decrement('qty');
+                
+                $reservation = Reservation::where('id',$result)->first();
+                $user_info = User::where('id',$user_id )->first();
+                $hotel_info = Hotel::where('id',$goods->hotel_id)->first();
+                $room_info = Room::where('id',$goods->room_id)->first();
+                $partner_info = User::where('id', $hotel_info->partner_id)->first();
+    
+                /*예약자 문자 발송 */
+                $title = "[루밍 예약 입금안내]";
+                $content = $user_info->name."님 아래 계좌로 입금해주시면 담당자 확인 후에 예약이 완료 됩니다.\n\n입금액 : ".number_format($goods->sale_price)."원 \n 입금계좌 : \n ".$hotel_info->account_number." ".$hotel_info->bank_name." (예금주 : ".$hotel_info->account_name.")";
+                $sms = new \stdClass;
+                $sms->phone = $user_info->phone;
+                $sms->content = $content;
+                $sms->title = $title;
+    
+                SMS::send($sms);
+    
+                /* 숙소 담당자 예약 확인 메일 */
+                $email = new \stdClass;
+                $email->email = $partner_info->email;
+                $email->content = "안녕하세요. ".$hotel_info->name." 예약 안내 메일입니다.";
+                $email->content .="<table style='border:1px solid gray;'>";
+                $email->content .="<tr><td style='width:100px;border-right:1px solid gray;border-bottom:1px solid gray;'>예약번호</td><td style='width:400px;border-bottom:1px solid gray;'>".$reservation->reservation_no."</td></tr>";
+                $email->content .="<tr><td style='border-right:1px solid gray;border-bottom:1px solid gray;'>예약자</td><td style='border-bottom:1px solid gray;'> ".$reservation->name."(".$reservation->phone.")</td></tr>";
+                $email->content .="<tr><td style='border-right:1px solid gray;border-bottom:1px solid gray;'>예약 접수 시간</td><td style='border-bottom:1px solid gray;'>".Carbon::now()->format('Y-m-d H:i:s')."</td></tr>";
+                $email->content .="<tr><td style='border-right:1px solid gray;border-bottom:1px solid gray;'>상품명</td><td style='border-bottom:1px solid gray;'>".$goods->goods_name."</td></tr>";
+                $email->content .="<tr><td style='border-right:1px solid gray;border-bottom:1px solid gray;'>객실명</td><td style='border-bottom:1px solid gray;'>".$room_info->name."</td></tr>";
+                $email->content .="<tr><td style='border-right:1px solid gray;border-bottom:1px solid gray;'>체크인 / 체크아웃</td><td style='border-bottom:1px solid gray;'>".$reservation->start_date." ~ ".$reservation->start_date."</td></tr>";
+                $email->content .="<tr><td style='border-right:1px solid gray;border-bottom:1px solid gray;'>방문 순단</td><td style='border-bottom:1px solid gray;'>".$reservation->visit_way."</td></tr>";
+                $email->content .="<tr><td style='border-right:1px solid gray;border-bottom:1px solid gray;'>예약상태</td><td style='border-bottom:1px solid gray;'>예약대기</td></tr>";
+                $email->content .="<tr><td style='border-right:1px solid gray;'>결제 정보</td><td> 무통장 입금 : ".$reservation->price."</td></tr>";
+                $email->content .="</table>";
+                $email->title = "예약 안내 메일 입니다. ";
+    
+                Email::send($email);
+    
+                $result = Push::insert([
+                    'user_id'=> 1,
+                    'content'=> $content ,
+                    'type'=> "R" ,
+                    'target_user' => $user_id ,
+                    'target_id' => $result ,
+                    'send_date'=> Carbon::now() ,
+                    'created_at'=> Carbon::now(),
+                ]);
+
+                $return->status = "500";
+                $return->msg = "fail";
+                
+    
+                
+            }else{
+                $return->status = "200";
+                $return->msg = "success";
+            }
+
         }else{
             $result =  0;
             $return->reason = "객실 수량 부족";
         }
             
-        
-
-        if($result){ //DB 입력 성공
-
-            $return->status = "200";
-            $return->msg = "success";
-            $return->insert_id = $result ;
-
-            Quantity::where('date','>=', $request->start_date )
-            ->where('date','<', $request->end_date )
-            ->where('goods_id',$request->goods_id)->decrement('qty');
-            
-            $reservation = Reservation::where('id',$result)->first();
-            $user_info = User::where('id',$user_id )->first();
-            $hotel_info = Hotel::where('id',$goods->hotel_id)->first();
-            $room_info = Room::where('id',$goods->room_id)->first();
-            $partner_info = User::where('id', $hotel_info->partner_id)->first();
-
-            /*예약자 문자 발송 */
-            $title = "[루밍 예약 입금안내]";
-            $content = $user_info->name."님 아래 계좌로 입금해주시면 담당자 확인 후에 예약이 완료 됩니다.\n\n입금액 : ".number_format($goods->sale_price)."원 \n 입금계좌 : \n ".$hotel_info->account_number." ".$hotel_info->bank_name." (예금주 : ".$hotel_info->account_name.")";
-            $sms = new \stdClass;
-            $sms->phone = $user_info->phone;
-            $sms->content = $content;
-            $sms->title = $title;
-
-            SMS::send($sms);
-
-            /* 숙소 담당자 예약 확인 메일 */
-            $email = new \stdClass;
-            $email->email = $partner_info->email;
-            $email->content = "안녕하세요. ".$hotel_info->name." 예약 안내 메일입니다.";
-            $email->content .="<table style='border:1px solid gray;'>";
-            $email->content .="<tr><td style='width:100px;border-right:1px solid gray;border-bottom:1px solid gray;'>예약번호</td><td style='width:400px;border-bottom:1px solid gray;'>".$reservation->reservation_no."</td></tr>";
-            $email->content .="<tr><td style='border-right:1px solid gray;border-bottom:1px solid gray;'>예약자</td><td style='border-bottom:1px solid gray;'> ".$reservation->name."(".$reservation->phone.")</td></tr>";
-            $email->content .="<tr><td style='border-right:1px solid gray;border-bottom:1px solid gray;'>예약 접수 시간</td><td style='border-bottom:1px solid gray;'>".Carbon::now()->format('Y-m-d H:i:s')."</td></tr>";
-            $email->content .="<tr><td style='border-right:1px solid gray;border-bottom:1px solid gray;'>상품명</td><td style='border-bottom:1px solid gray;'>".$goods->goods_name."</td></tr>";
-            $email->content .="<tr><td style='border-right:1px solid gray;border-bottom:1px solid gray;'>객실명</td><td style='border-bottom:1px solid gray;'>".$room_info->name."</td></tr>";
-            $email->content .="<tr><td style='border-right:1px solid gray;border-bottom:1px solid gray;'>체크인 / 체크아웃</td><td style='border-bottom:1px solid gray;'>".$reservation->start_date." ~ ".$reservation->start_date."</td></tr>";
-            $email->content .="<tr><td style='border-right:1px solid gray;border-bottom:1px solid gray;'>방문 순단</td><td style='border-bottom:1px solid gray;'>".$reservation->visit_way."</td></tr>";
-            $email->content .="<tr><td style='border-right:1px solid gray;border-bottom:1px solid gray;'>예약상태</td><td style='border-bottom:1px solid gray;'>예약대기</td></tr>";
-            $email->content .="<tr><td style='border-right:1px solid gray;'>결제 정보</td><td> 무통장 입금 : ".$reservation->price."</td></tr>";
-            $email->content .="</table>";
-            $email->title = "예약 안내 메일 입니다. ";
-
-            Email::send($email);
-
-            $result = Push::insert([
-                'user_id'=> 1,
-                'content'=> $content ,
-                'type'=> "R" ,
-                'target_user' => $user_id ,
-                'target_id' => $result ,
-                'send_date'=> Carbon::now() ,
-                'created_at'=> Carbon::now(),
-            ]);
-            
-
-            
-        }else{
-            $return->status = "500";
-            $return->msg = "fail";
-        }
+    
 
         return response()->json($return, 200)->withHeaders([
             'Content-Type' => 'application/json'
