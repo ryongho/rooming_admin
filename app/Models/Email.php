@@ -22,7 +22,7 @@ class Email extends Model
             'state'=> $result->state ,
             'title'=> $result->title ,
             'content'=> $result->content ,
-            'send_date'=> $result->send_date ,
+            'send_date'=> Carbon::now() ,
             'created_at'=> Carbon::now(),
         ]);
     }
