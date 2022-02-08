@@ -530,6 +530,10 @@ class ReservationController extends Controller
             
             $result = Reservation::where('id', $request->id)->update(['status' => 'C']);// 취소 신청 - 관리자 확인후 취소 가능
 
+            Quantity::where('date','>=', $reservation_info->start_date )
+                ->where('date','<', $reservation_info->end_date )
+                ->where('goods_id',$reservation_info->goods_id)->increment('qty');
+
             $title = "[예약 취소 확정 안내]";
             $content = $reservation_info->name."님 예약 취소 확정 되었습니다. \n\n 예약번호 : ".$reservation_info->reservation_no."\n"."예약자 : ".$reservation_info->name;
     
