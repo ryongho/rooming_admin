@@ -22,6 +22,7 @@ class Email extends Model
             'state'=> $result->state ,
             'title'=> $result->title ,
             'content'=> $result->content ,
+            'fail_reason'=> $result->fail_reason ,
             'send_date'=> Carbon::now() ,
             'created_at'=> Carbon::now(),
         ]);
@@ -66,11 +67,13 @@ class Email extends Model
 
             $email->state = $mail->send();
             $email->send_date = Carbon::now();
+            $email->fail_reason = "";
 
             //echo 'Message has been sent';
             //$result =  true;
         } catch (Exception $e) {
             //echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+            $email->fail_reason = $mail->ErrorInfo;
             $email->state = false;
         }
         
