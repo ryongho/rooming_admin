@@ -489,6 +489,25 @@ class ReservationController extends Controller
                 $sms->content = $content;
 
                 Sms::send($sms);
+
+                $hotel_info = Hotel::where('id',$reservation_info->hotel_id)->first();
+                $partner_info = User::where('id', $hotel_info->partner_id)->first();
+
+                 /* 숙소 담당자 예약 취소 확인 메일 */
+                $email = new \stdClass;
+                $email->email = $partner_info->email;
+                $email->content = "<img style='width:600px;' src='https://rooming-img.s3.ap-northeast-2.amazonaws.com/mail_images/DjDjiXn3cwg1geUfVCQvgqBVKooFaUpvSOJTTBuU.png'/>";
+                $email->content .="<table style='border:1px solid gray;'>";
+                $email->content .="<tr><td style='width:150px;border-right:1px solid gray;border-bottom:1px solid gray;'>예약번호</td><td style='width:450px;border-bottom:1px solid gray;'>".$reservation_info->reservation_no."</td></tr>";
+                $email->content .="<tr><td style='border-right:1px solid gray;border-bottom:1px solid gray;'>예약자</td><td style='border-bottom:1px solid gray;'> ".$reservation_info->name."(".$reservation_info->phone.")</td></tr>";
+                $email->content .="<tr><td style='border-right:1px solid gray;border-bottom:1px solid gray;'>취소 요청 시간</td><td style='border-bottom:1px solid gray;'>".Carbon::now()->format('Y-m-d H:i:s')."</td></tr>";
+                $email->content .="<tr><td style='border-right:1px solid gray;border-bottom:1px solid gray;'>결제 정보</td><td style='border-bottom:1px solid gray;'> 무통장 입금 : ".$reservation_info->reservation_price."</td></tr>";
+                $email->content .="<tr><td style='border-right:1px solid gray;'>파트너사 취소 규정</td><td>".$hotel_info->refund_rule."</td></tr>";
+
+                $email->content .="</table>";
+                $email->title = "예약 취소 메일 입니다. ";
+
+                Email::send($email);
             }
             
             if(!$result){
@@ -709,17 +728,16 @@ class ReservationController extends Controller
             /* 숙소 담당자 예약 확인 메일 */
             $email = new \stdClass;
             $email->email = $partner_info->email;
-            $email->content = "<img style='width:600px;' src='https://rooming-img.s3.ap-northeast-2.amazonaws.com/mail_images/IqdDeFzQKEQ2w3BnduT1Ijk7Zne6J0F49uEonW90.png'/>";
-            $email->content .= "<br/> 안녕하세요. ".$res_info->name." 고객님으로부터 입금 확인 요청이 왔습니다.";
-            $email->content .= "<br/>파트너사 관리자 계서는 입금확인 후 관리자페이지에서 예약확정을 해주세요.";
+            $email->content = "<img style='width:600px;' src='https://rooming-img.s3.ap-northeast-2.amazonaws.com/mail_images/LM3UfzaMtkL7BBAyv3agobbVb1p34KNuG3T8qSYo.png'/>";
             $email->content .="<table style='border:1px solid gray;'>";
             $email->content .="<tr><td style='width:150px;border-right:1px solid gray;border-bottom:1px solid gray;'>예약번호</td><td style='width:450px;border-bottom:1px solid gray;'>".$res_info->reservation_no."</td></tr>";
             $email->content .="<tr><td style='border-right:1px solid gray;border-bottom:1px solid gray;'>예약자</td><td style='border-bottom:1px solid gray;'> ".$res_info->name."(".$res_info->phone.")</td></tr>";
             $email->content .="<tr><td style='border-right:1px solid gray;border-bottom:1px solid gray;'>입금확인 요청 시간</td><td style='border-bottom:1px solid gray;'>".Carbon::now()->format('Y-m-d H:i:s')."</td></tr>";
             $email->content .="<tr><td style='border-right:1px solid gray;'>결제 정보</td><td> 무통장 입금 : ".$res_info->reservation_price."</td></tr>";
             $email->content .="</table>";
+            $email->content .="<a href='https://partner.rooming.link/' style='color: #fff;border-color: #f57d6a;background: #f57d6a;cursor:pointer;text-decoration:none;'>관리자 페이지로 이동</a>";
             $email->title = "입금 확인 요청 안내 메일 입니다. ";
-
+        
             Email::send($email);
 
             $return->status = "200";
