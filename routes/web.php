@@ -25,16 +25,18 @@ use PHPMailer\PHPMailer\Exception;
 Route::get('/', function () {
     return view('main');
 });
-Route::get('/contact_form', function () {
+
+Route::get('/partner', function () {
+    return view('partner');
+});
+
+Route::get('/contact', function () {
     return view('contact_form');
 });
 Route::get('/contact_regist', function () {
     return view('contact_form');
 });
 Route::get('/regist', function (Request $request) {
-
-
-    
 
     $email = new \stdClass;
     $email->email = "sales2@dnsolution.kr";

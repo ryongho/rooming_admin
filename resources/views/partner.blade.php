@@ -34,7 +34,8 @@
             .top{
                 width:100%;
                 max-width:800px;
-                margin:20px auto;
+                margin:0px auto;
+                background-color:#f3746e;
 
             }
             .logo_img{
@@ -43,16 +44,16 @@
                 margin-left: 6%;
             }
             .contact_top_img{
-                width:15%;
-                min-width:100px;
+                width:5%;
+                min-width:80px;
                 float:right;
                 margin-top:9px;
-                margin-right:6%;
+                margin-right:1%;
                 cursor:pointer;
                 z-index:1;
             }
             .contact_img{
-                margin:20px auto;
+                margin:60px auto;
                 width:15%;
                 min-width:100px;
                 position: relative; left: 50%; top: 50%; 
@@ -82,18 +83,19 @@
     </head>
     <body>
             <total class="total">
-                <!--<div class="top">
-                    <img src="/images/btn/logo.png" class="logo_img"/>
-                    <a href="/contact_form"><img src="/images/btn/contact_top.png" class="contact_top_img"/></a>
-                </div>-->
+                <div class="top">
+                <a href="/"><img src="/images/partner/logo.png" class="logo_img"/></a>
+                    <a href="https://partner.rooming.link/"><img src="/images/partner/menu_03.png" class="contact_top_img"/></a>
+                    <a href="/contact"><img src="/images/partner/menu_02.png" class="contact_top_img"/></a>
+                    <a href="/download/숙박직거래_앱_루밍_소개서.pdf"><img src="/images/partner/menu_01.png" class="contact_top_img"/></a>
+                </div>
                 <div class="main">
-                    <img src="/images/main_01.png" class="main_img"/>
-                    <a href="https://play.google.com/store/apps/details?id=link.rooming.app"><img src="/images/main_02_01.png" class="btn_google"/></a>
-                    <a href="https://apps.apple.com/kr/app/%EB%A3%A8%EB%B0%8D-rooming/id1591176190"><img src="/images/main_02_02.png" class="btn_apple"/></a>
-                    <img src="/images/main_03.png" class="main_img"/>
-                    <a href="/partner"><img src="/images/main_04_01.png" class="btn_google"/></a>
-                    <a href="https://partner.rooming.link/"><img src="/images/main_04_02.png" class="btn_apple"/></a>
-                    <img src="/images/main_05.png" class="main_img"/>
+                    <img src="/images/partner/title.png" class="main_img"/>
+                    <a href="https://play.google.com/store/apps/details?id=link.rooming.app"><img src="/images/partner/google_btn.png" class="btn_google"/></a>
+                    <a href="https://apps.apple.com/kr/app/%EB%A3%A8%EB%B0%8D-rooming/id1591176190"><img src="/images/partner/apple_btn.png" class="btn_apple"/></a>
+                    <img src="/images/partner/content.png" class="main_img"/>
+                    <a href="https://partner.rooming.link/"><img src="/images/partner/partner_btn.png" class="contact_img"/></a>
+                    <img src="/images/partner/footer.png" class="main_img"/>
                 </div>
             </total>
             

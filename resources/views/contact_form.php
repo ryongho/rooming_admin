@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>D&Solution</title>
+        <title>Rooming</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
         <!-- Fonts -->
         <style>
@@ -36,20 +36,30 @@
             .top{
                 width:100%;
                 max-width:800px;
-                margin:20px auto;
+                margin:0px auto;
 
             }
             .logo_img{
                 width:20%;
                 min-width:120px;
-                margin-left: 6%;
+                margin-left: 1%;
+                margin-top:20px;
+            }
+            .contact_top_img{
+                width:5%;
+                min-width:80px;
+                float:right;
+                margin-top:20px;
+                margin-right:1%;
+                cursor:pointer;
+                z-index:1;
             }
             .form_div{
                 width:100%;
                 max-width:800px;
                 height:1100px;
                 margin:0px auto;
-                background-color:#efefef;
+                background-color:#fff7f6;
                 padding:0px;
             }
             .text_contact{
@@ -63,7 +73,7 @@
                 font-size:23px;
                 text-align:right;
                 margin-right:30px;
-                background-color:#efefef;
+                background-color:#fff7f6;
             }
             table{
                 margin:30px 0px;
@@ -104,12 +114,15 @@
     <body>
             <total class="total">
                 <div class="top">
-                <a href="/"><img src="/images/btn/logo.png" class="logo_img"/></a>
+                    <a href="/"><img src="/images/contact/logo.png" class="logo_img"/></a>
+                    <a href="https://partner.rooming.link/"><img src="/images/contact/partner.png" class="contact_top_img"/></a>
+                    <a href="/contact"><img src="/images/contact/contact.png" class="contact_top_img"/></a>
+                    <a href="/download/숙박직거래_앱_루밍_소개서.pdf"><img src="/images/contact/intro.png" class="contact_top_img"/></a>
                 </div>
                 <div class="main">
-                    <img src="/images/sub_01.png" class="main_img"/>
+                    
                     <div class="form_div">
-                        <div class="text_contact">CONTACT</div>
+                        <img src="/images/contact/contact_title.png" class="main_img"/>
                         <div class="form">
                         <form action="/regist" method="GET" id="form1">
                             <table>
@@ -171,12 +184,12 @@
                             
 
                             <div class="main">
-                                <a href="#" onclick="document.getElementById('form1').submit();"><img src="/images/btn/contact.png" class="contact_img"/></a>
+                                <a href="#" onclick="document.getElementById('form1').submit();"><img src="/images/contact/contact_btn.png" class="contact_img"/></a>
                             </div>
                             <form>
                         </div>
                     </div>
-                    <img src="/images/main_04.png" class="main_img"/>
+                    <img src="/images/partner/footer.png" class="main_img"/>
                 </div>
             </total>
             
