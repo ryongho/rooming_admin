@@ -81,7 +81,7 @@
             }
             .form{
                 max-width:80%;
-                background-color:white;
+                background-color:#fff7f6;
                 float:left;
                 margin:0px 10%;
                 padding:0px;
