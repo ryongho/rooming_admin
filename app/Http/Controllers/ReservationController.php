@@ -25,7 +25,7 @@ class ReservationController extends Controller
         $return = new \stdClass;
 
         $return->status = "500";
-        $return->msg = "예약 가능한 날짜가 아닙니다.";
+        $return->msg = "예약 불가";
         
 
         $login_user = Auth::user();
@@ -54,8 +54,8 @@ class ReservationController extends Controller
         
 
         $goods = Goods::where('id',$request->goods_id)->whereNotIn('id',$not_goods)
-                        ->where('start_date','>=',$request->start_date)
-                        ->where('end_date','<=',$request->end_date)
+                        ->where('start_date','<=',$request->start_date)
+                        ->where('end_date','>=',$request->end_date)
                         ->first();
 
         if(isset($goods)){
