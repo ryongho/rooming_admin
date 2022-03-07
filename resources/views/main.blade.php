@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
-        <meta name="naver-site-verification" content="c4be219da7c9a086631e388291191e04a5220ef0" />
+        <meta name="naver-site-verification" content="f0b15e06076c62f43025e5c96e1201759d1d5973" />
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
