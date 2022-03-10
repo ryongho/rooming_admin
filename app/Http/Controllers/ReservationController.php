@@ -244,7 +244,7 @@ class ReservationController extends Controller
                                     'reservations.created_at as created_at',
                                     'reservations.updated_at as updated_at',
                                     'reservations.status as status',
-                                    'reservations.name as name',
+                                    DB::raw('(select name from users where reservations.user_id = users.id) as name'),
                                     'reservations.visit_way as visit_way',
                                     'reservations.phone as phone',
                                     'reservations.id as reservation_id',
