@@ -6,7 +6,16 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>Rooming</title>
+        <title>루밍 - 숙박 직거래 마켓</title>
+        <meta name="description" content="숙박 직거래 마켓 루밍에서 다양한 숙박 상품을 쉽게 비교하고 쇼핑하세요."> 
+        <meta name="keywords" content="루밍, rooming, 숙소예약, 호텔예약, 숙박예약, 예약플랫폼, 호텔예약앱, 호텔예약어플, 호캉스, 호텔, 서울호텔, 호텔특가, 호텔할인, 호텔가격비교, 호텔부킹">
+        <link rel="canonical" href="https://rooming.link/" />
+        <!-- sns OpenGraph tag -->
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="루밍 - 숙박 직거래 마켓"/> 
+        <meta property="og:description" content="숙박 직거래 마켓 루밍에서 다양한 숙박 상품을 쉽게 비교하고 쇼핑하세요." /> 
+        <meta property="og:image" content="/images/main_01.png"/>
+        <meta property="og:url" content="https://rooming.link/"/>
 
         <!-- Fonts -->
         <style>
