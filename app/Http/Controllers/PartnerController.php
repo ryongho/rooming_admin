@@ -252,7 +252,7 @@ class PartnerController extends Controller
         }
                                 
         // Rename worksheet
-        $objPHPExcel->getActiveSheet()->setTitle('user_list');
+        $objPHPExcel->getActiveSheet()->setTitle('partner_list');
 
 
         // Set active sheet index to the first sheet, so Excel opens this as the first sheet
