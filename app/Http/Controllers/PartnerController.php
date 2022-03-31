@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
+use PHPExcel; 
+use PHPExcel_IOFactory;
 
 
 class PartnerController extends Controller
@@ -160,6 +162,119 @@ class PartnerController extends Controller
         return response()->json($list, 200)->withHeaders([
             'Content-Type' => 'application/json'
         ]);;
+        
+    }
+
+    
+    public function list_download(Request $request){
+        ob_start();
+        $start_no = $request->start_no;
+        $row = $request->row;
+        
+        $rows = User::select(   'id',
+                                'name',
+                                'nickname',
+                                'phone',
+                                'email',
+                                'user_id',
+                                'created_at',
+                                'updated_at',
+                                'leave',
+                )->where('id' ,">=", $start_no)->where('user_type','1')->orderBy('id', 'desc')->orderBy('id')->limit($row)->get();
+
+        
+        $list = array();
+        $i = 0;
+
+        foreach($rows as $row){
+            
+            $list[$i]['id'] = $row->id;
+            $list[$i]['user_id'] = $row->user_id;
+            $list[$i]['name'] = $row->name;
+            $list[$i]['phone'] = $row->phone;
+            $list[$i]['email'] = $row->email;
+            $list[$i]['created_at'] = $row->created_at;
+            $list[$i]['updated_at'] = $row->updated_at;
+            $list[$i]['nickname'] = $row->nickname;
+            $list[$i]['leave'] = $row->leave;
+
+            $i++;
+        }
+        //dd($list);
+        
+        error_reporting(E_ALL);
+        ini_set('display_errors', TRUE);
+        ini_set('display_startup_errors', TRUE);
+        date_default_timezone_set('Asia/Seoul');
+
+        if (PHP_SAPI == 'cli')
+            die('This example should only be run from a Web Browser');
+
+        set_time_limit(120); 
+        ini_set("memory_limit", "256M");
+
+        // Create new PHPExcel object
+        $objPHPExcel = new PHPExcel();
+
+        // Set document properties
+        $objPHPExcel->getProperties()->setCreator("Maarten Balliauw")
+                                    ->setLastModifiedBy("Maarten Balliauw")
+                                    ->setTitle("Office 2007 XLSX Test Document")
+                                    ->setSubject("Office 2007 XLSX Test Document")
+                                    ->setDescription("Test document for Office 2007 XLSX, generated using PHP classes.")
+                                    ->setKeywords("office 2007 openxml php")
+                                    ->setCategory("Test result file");
+
+
+        // Add some data
+        $objPHPExcel->setActiveSheetIndex(0)
+                    ->setCellValue('A1', '유저아이디')
+                    ->setCellValue('B1', '이름')
+                    ->setCellValue('C1', '연락처')
+                    ->setCellValue('D1', '이메일')
+                    ->setCellValue('E1', '닉네임')
+                    ->setCellValue('F1', '등록일')
+                    ->setCellValue('G1', '수정일')
+                    ->setCellValue('H1', '탈퇴여부');
+        $i = 2;
+        foreach ($list as $row){
+
+            $objPHPExcel->setActiveSheetIndex(0)
+                        ->setCellValue('A'.$i, $row['user_id'])
+                        ->setCellValue('B'.$i, $row['name'])
+                        ->setCellValue('C'.$i, $row['phone'])
+                        ->setCellValue('D'.$i, $row['email'])
+                        ->setCellValue('E'.$i, $row['nickname'])
+                        ->setCellValue('F'.$i, $row['created_at'])
+                        ->setCellValue('G'.$i, $row['updated_at'])
+                        ->setCellValue('H'.$i, $row['leave']);
+            $i++;
+        }
+                                
+        // Rename worksheet
+        $objPHPExcel->getActiveSheet()->setTitle('user_list');
+
+
+        // Set active sheet index to the first sheet, so Excel opens this as the first sheet
+        $objPHPExcel->setActiveSheetIndex(0);
+
+
+        // Redirect output to a client’s web browser (Excel2007)
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="user_list.xlsx"');
+        header('Cache-Control: max-age=0');
+        // If you're serving to IE 9, then the following may be needed
+        header('Cache-Control: max-age=1');
+
+        // If you're serving to IE over SSL, then the following may be needed
+        header ('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+        header ('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT'); // always modified
+        header ('Cache-Control: cache, must-revalidate'); // HTTP/1.1
+        header ('Pragma: public'); // HTTP/1.0
+
+        $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+        $objWriter->save('php://output');
+        exit;
         
     }
 }

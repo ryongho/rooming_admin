@@ -61,6 +61,8 @@ Route::get('/user/certifications', [UserController::class, 'certifications']);
 Route::put('/partner/regist', [PartnerController::class, 'regist']);
 Route::middleware('auth:sanctum')->get('/partner/list', [PartnerController::class, 'list']);
 Route::middleware('auth:sanctum')->get('/user/list', [UserController::class, 'list']);
+Route::get('/partner/list/download', [PartnerController::class, 'list_download']);
+Route::get('/user/list/download', [UserController::class, 'list_download']);
 Route::middleware('auth:sanctum')->get('/user/info', [UserController::class, 'info']);
 Route::middleware('auth:sanctum')->put('/user/update', [UserController::class, 'update']);
 Route::put('/user/update_password', [UserController::class, 'update_password']);
