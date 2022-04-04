@@ -36,24 +36,23 @@ class ReservationController extends Controller
         
         $reservation_no = "R_".$now."_".$request->goods_id."_".$user_id;
 
-        $not_goods = array(); // 상품 수량 0인 상품                
+        $pos_goods = array(); // 상품 수량 0인 상품                
         
         $dates = Quantity::where('date','>=', $request->start_date )
         ->where('date','<', $request->end_date )
         ->where('goods_id',$request->goods_id)
-        ->where('qty','<','1')
+        ->where('qty','>','0')
         ->get();
 
         if(count($dates)){
             $i =0;
             foreach($dates as $date){
-                $not_goods[$i] = $date['goods_id'];
+                $pos_goods[$i] = $date['goods_id'];
                 $i++;
             }   
         }
-        
 
-        $goods = Goods::where('id',$request->goods_id)->whereNotIn('id',$not_goods)
+        $goods = Goods::where('id',$request->goods_id)->whereIn('id',$pos_goods)
                         ->where('start_date','<=',$request->start_date)
                         ->where('end_date','>=',$request->end_date)
                         ->first();
@@ -113,7 +112,7 @@ class ReservationController extends Controller
                 $email->content .="<tr><td style='border-right:1px solid gray;border-bottom:1px solid gray;'>예약 접수 시간</td><td style='border-bottom:1px solid gray;'>".Carbon::now()->format('Y-m-d H:i:s')."</td></tr>";
                 $email->content .="<tr><td style='border-right:1px solid gray;border-bottom:1px solid gray;'>상품명</td><td style='border-bottom:1px solid gray;'>".$goods->goods_name."</td></tr>";
                 $email->content .="<tr><td style='border-right:1px solid gray;border-bottom:1px solid gray;'>객실명</td><td style='border-bottom:1px solid gray;'>".$room_info->name."</td></tr>";
-                $email->content .="<tr><td style='border-right:1px solid gray;border-bottom:1px solid gray;'>체크인 / 체크아웃</td><td style='border-bottom:1px solid gray;'>".$reservation->start_date." ~ ".$reservation->start_date."</td></tr>";
+                $email->content .="<tr><td style='border-right:1px solid gray;border-bottom:1px solid gray;'>체크인 / 체크아웃</td><td style='border-bottom:1px solid gray;'>".$reservation->start_date." ~ ".$reservation->end_date."</td></tr>";
                 $email->content .="<tr><td style='border-right:1px solid gray;border-bottom:1px solid gray;'>방문 순단</td><td style='border-bottom:1px solid gray;'>".$reservation->visit_way."</td></tr>";
                 $email->content .="<tr><td style='border-right:1px solid gray;border-bottom:1px solid gray;'>예약상태</td><td style='border-bottom:1px solid gray;'>예약대기</td></tr>";
                 $email->content .="<tr><td style='border-right:1px solid gray;'>결제 정보</td><td> 무통장 입금 : ".$reservation->price."</td></tr>";
@@ -475,7 +474,7 @@ class ReservationController extends Controller
         }else{
             if($reservation_info->status == "W"){ // 예약 대기 상태인 경우 
                 $result = Reservation::where('id', $request->id)->where('user_id',$user_id)->update(['status' => 'C']); // 취소 확정
-                
+                 
                 Quantity::where('date','>=', $reservation_info->start_date )
                 ->where('date','<', $reservation_info->end_date )
                 ->where('goods_id',$reservation_info->goods_id)->increment('qty');
