@@ -202,7 +202,7 @@ class UserController extends Controller
         $list->search_type = $request->search_type;
         $list->search_keyword = $request->search_keyword;
 
-        $list->total_page = floor($count/20)+1;
+        $list->total_page = floor($count/$row)+1;
         $list->data = $rows;
         
         return view('user_list', ['list' => $list]);
