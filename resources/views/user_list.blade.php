@@ -71,8 +71,8 @@
                     </div>
                     
 
-                    <nav aria-label="Page navigation" style="width:300px; margin:auto;">
-                        <ul class="pagination">
+                    <nav aria-label="Page navigation" style="width:100%;">
+                        <ul class="pagination" style="width:300px;margin:auto;">
 
                         @for($i= 1; $i <= $list->total_page; $i++)
                             @if($i == $list->page_no)

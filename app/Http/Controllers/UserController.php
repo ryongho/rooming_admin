@@ -158,7 +158,7 @@ class UserController extends Controller
             $page_no = $request->page_no;
         }
 
-        $row = 20;
+        $row = 50;
         
         $offset = (($page_no-1) * $row);
 
