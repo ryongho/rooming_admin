@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
+use App\Http\Controllers\UserController;
+
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
@@ -22,9 +24,33 @@ use PHPMailer\PHPMailer\Exception;
 |
 */
 
-Route::get('/', function () {
+Route::get('/login', function () {
+    return view('login');
+})->name('login');
+
+Route::post('/login_proc', [UserController::class, 'login'])->name('login_proc');
+
+Route::middleware('auth:sanctum')->get('/', function () {
     return view('main');
-});
+})->name('main');
+
+Route::get('/child', function () {
+    return view('child');
+})->name('child');
+
+Route::get('/child2', function () {
+    return view('child2');
+})->name('child2');
+
+Route::get('/user_list', [UserController::class, 'user_list'])->name('user_list');
+
+Route::get('/hotel_list', function () {
+    return view('hotel_list');
+})->name('hotel_list');
+Route::get('/reservation_list', function () {
+    return view('reservation_list');
+})->name('reservation_list');
+
 
 Route::get('/partner', function () {
     return view('partner');

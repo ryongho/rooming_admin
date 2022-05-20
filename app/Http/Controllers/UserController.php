@@ -73,6 +73,7 @@ class UserController extends Controller
     }
 
     public function login(Request $request){
+
         $user = User::where('email' , $request->email)->where('leave','N')->first();
 
         $return = new \stdClass;
@@ -81,6 +82,7 @@ class UserController extends Controller
             $return->status = "501";
             $return->msg = "존재하지 않는 아이디 입니다.";
             $return->email = $request->email;
+            return redirect()->route('login');
         }else if (Hash::check($request->password, $user->password)) {
             //echo("로그인 확인");
             Auth::loginUsingId($user->id);
@@ -93,35 +95,20 @@ class UserController extends Controller
             $return->dormant = $login_user->dormant;
             $return->token = $token->plainTextToken;
             
-            //dd($token->plainTextToken);    
+            //dd($token->plainTextToken);
+            return redirect()->route('main');    
         }else{
             $return->status = "500";
             $return->msg = "아이디 또는 패스워드가 일치하지 않습니다.";
             $return->email = $request->email;
+            return redirect()->route('login');
         }
 
-        return response()->json($return, 200)->withHeaders([
-            'Content-Type' => 'application/json'
-        ]);;
-    }
-
-    public function su(Request $request){
         
-        $return = new \stdClass;
-        Auth::loginUsingId($request->id);
-        $login_user = Auth::user();
-
-        $token = $login_user->createToken('user');
-
-        $return->status = "200";
-        $return->msg = "성공";
-        $return->dormant = $login_user->dormant;
-        $return->token = $token->plainTextToken;
-
-        return response()->json($return, 200)->withHeaders([
-            'Content-Type' => 'application/json'
-        ]);;
+    
     }
+
+   
 
     public function logout(Request $request){
         $user_info = Auth::user();
@@ -165,23 +152,61 @@ class UserController extends Controller
         }
     }
 
-    public function list(Request $request){
-        $start_no = $request->start_no;
-        $row = $request->row;
+    public function user_list(Request $request){
         
-        $rows = User::where('id' ,">=", $start_no)->where('user_type','0')->orderBy('id', 'desc')->orderBy('id')->limit($row)->get();
+        $start_no = 0;
+
+        if($request->page_no){
+            $start_no = (($request->page_no-1)*20);
+        }else{
+            $request->page_no = 1;
+        }
+        $start_date = $request->start_date;
+        $end_date = $request->end_date;
+
+        $search_type = $request->search_type;
+        $search_keyword = $request->search_keyword;
+        
+        $search = null;
+        if($search_type){
+            $search = $request->search_type.",".$request->search_keyword;
+        }
+        
+    
+        $row = 20;
+        
+        $rows = User::where('id' ,">=", $start_no)
+                ->where('user_type','0')
+                ->when($start_date, function ($query, $start_date) {
+                    return $query->where('created_at' ,">=", $start_date);
+                })
+                ->when($end_date, function ($query, $end_date) {
+                    return $query->where('created_at' ,"<=", $end_date);
+                })
+                ->when($search , function ($query, $search) {
+                    $search_arr = explode(',',$search);
+                    return $query->where($search_arr[0] ,"like", "%".$search_arr[1]."%");
+                })
+                ->orderBy('id', 'desc')
+                ->limit($row)->get();
+
+        $count = User::where('user_type','0')->count();
 
         $list = new \stdClass;
 
         $list->status = "200";
         $list->msg = "success";
-        $list->cnt = count($rows);
+        
+        $list->page_no = $request->page_no;
+        $list->start_date = $request->start_date;
+        $list->end_date = $request->end_date;
+        $list->search_type = $request->search_type;
+        $list->search_keyword = $request->search_keyword;
+
+        $list->total_page = floor($count/20)+1;
         $list->data = $rows;
         
-        
-        return response()->json($list, 200)->withHeaders([
-            'Content-Type' => 'application/json'
-        ]);;
+        return view('user_list', ['list' => $list]);
         
     }
 
@@ -299,77 +324,7 @@ class UserController extends Controller
     }
 
 
-    public function check_email(Request $request){
-        
-        //dd($request);
-        $return = new \stdClass;
-
-        /* 중복 체크 - start*/
-        $email_cnt = User::where('email',$request->email)->count();
-
-        if($email_cnt){
-            $return->usable = "N";
-            $return->msg = "사용중인 이메일";
-            $return->email = $request->email;
-        }else{
-            $return->usable = "Y";
-            $return->msg = "사용가능 이메일";
-            $return->email = $request->email;            
-        }
-
-        return response()->json($return, 200)->withHeaders([
-            'Content-Type' => 'application/json'
-        ]);;
-
-    }
     
-    public function check_user(Request $request){
-        
-        //dd($request);
-        $return = new \stdClass;
-
-        /* 중복 체크 - start*/
-        $email_cnt = User::where('email',$request->email)->count();
-
-        if($email_cnt){
-            $return->usable = "Y";
-            $return->msg = "존재하는 아이디";
-            $return->email = $request->email;
-            $return->status = 200;
-        }else{
-            $return->usable = "N";
-            $return->msg = "존재하지 않는 이메일 입니다.";
-            $return->email = $request->email;            
-            $return->status = 500;
-        }
-
-        return response()->json($return, 200)->withHeaders([
-            'Content-Type' => 'application/json'
-        ]);;
-
-    }
-    
-    public function check_nickname(Request $request){
-        
-        //dd($request);
-        $return = new \stdClass;
-
-        /* 중복 체크 - start*/
-        $nickname_cnt = User::where('nickname',$request->nickname)->count();
-
-        if($nickname_cnt){
-            $return->usable = "N";
-            $return->msg = "사용중인 닉네임";
-            $return->nickname = $request->nickname;
-        }else{
-            $return->usable = "Y";
-            $return->msg = "사용가능 닉네임";
-            $return->nickname = $request->nickname;            
-        }
-
-        echo(json_encode($return));
-
-    }  
 
     public function info(){
         //dd($request);
@@ -548,66 +503,6 @@ class UserController extends Controller
 
     }
 
-    public function not_login(){
-        header("Access-Control-Allow-Origin: *");
-        $return = new \stdClass;
-    
-        $return->status = "500";
-        $return->msg = "Not Login";
-
-        return response()->json($return, 200)->withHeaders([
-            'Content-Type' => 'application/json'
-        ]);;
-    }
-
-    public function certifications(Request $request){ // 본인인증 후 정보 리턴
-        $imp_uid = $request->imp_uid;
-
-        $_api_url = env('IMPORT_GETTOKEN_URL');     // 본인인증 후 access_token 리턴
-        $_param['imp_key'] = env('IMPORT_KEY');
-        $_param['imp_secret'] = env('IMPORT_SECRET');    // 아임포트 시크릿
-       
-        $_curl = curl_init();
-        curl_setopt($_curl,CURLOPT_URL,$_api_url);
-        curl_setopt($_curl,CURLOPT_POST,true);
-        curl_setopt($_curl,CURLOPT_SSL_VERIFYPEER,false);
-        curl_setopt($_curl,CURLOPT_RETURNTRANSFER,true);
-        curl_setopt($_curl,CURLOPT_POSTFIELDS,$_param);
-        $_result = curl_exec($_curl);
-        //dd($_result);
-        curl_close($_curl);
-
-        $_result = json_decode($_result);
-        //dd($_result);
-        $access_token = $_result->response->access_token;
-
-        $headers = [
-            'Authorization:'.$access_token
-        ];
-        
-        $url = "https://api.iamport.kr/certifications/".$imp_uid; // 정보 요청 url - access_token 추가
-        $_curl2 = curl_init();
-        curl_setopt($_curl2,CURLOPT_URL,$url);
-        curl_setopt($_curl2, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($_curl2,CURLOPT_RETURNTRANSFER,true);
-        $_result2 = curl_exec($_curl2);
-        $_result2 = json_decode($_result2);
-            
-        $user_infos= $_result2->response;
-        
-        $return = new \stdClass;
-        $return->name = $user_infos->name;
-        $return->birthday = $user_infos->birthday;
-        $return->phone = $user_infos->phone;
-        //$return->phone = "010-000-0000";
-        curl_close($_curl2);
-
-        return response()->json($return, 200)->withHeaders([
-            'Content-Type' => 'application/json'
-        ]);
-        
-
-    }
 
     
 
