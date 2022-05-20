@@ -68,6 +68,7 @@
   <body class="text-center">
     <div id="main">
       <form class="form-signin" method="POST" action="{{ route('login_proc') }}">
+        @csrf
         <h1 class="h3 mb-3 font-weight-normal">Please Login</h1>
         <input type="email" name="email" id="inputEmail" class="form-control" placeholder="Email" required autofocus>
         <input type="password" name="password" id="inputPassword" class="form-control" placeholder="Password" required>
