@@ -153,30 +153,28 @@ class UserController extends Controller
     }
 
     public function user_list(Request $request){
-        
-        $start_no = 0;
-
+        $page_no = 1;
         if($request->page_no){
-            $start_no = (($request->page_no-1)*20);
-        }else{
-            $request->page_no = 1;
+            $page_no = $request->page_no;
         }
+
+        $row = 20;
+        
+        $offset = (($page_no-1) * $row);
+
         $start_date = $request->start_date;
         $end_date = $request->end_date;
 
         $search_type = $request->search_type;
         $search_keyword = $request->search_keyword;
-        
+
         $search = null;
         if($search_type){
             $search = $request->search_type.",".$request->search_keyword;
         }
         
-    
-        $row = 20;
         
-        $rows = User::where('id' ,">=", $start_no)
-                ->where('user_type','0')
+        $rows = User::where('user_type','0')
                 ->when($start_date, function ($query, $start_date) {
                     return $query->where('created_at' ,">=", $start_date);
                 })
@@ -187,6 +185,7 @@ class UserController extends Controller
                     $search_arr = explode(',',$search);
                     return $query->where($search_arr[0] ,"like", "%".$search_arr[1]."%");
                 })
+                ->offset($offset)
                 ->orderBy('id', 'desc')
                 ->limit($row)->get();
 
