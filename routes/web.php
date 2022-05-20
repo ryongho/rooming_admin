@@ -45,7 +45,7 @@ Route::get('/child2', function () {
 Route::get('/user_list', [UserController::class, 'user_list'])->name('user_list');
 
 Route::get('/hotel_list', function () {
-    return view('hotel_list');
+    return view('child2');
 })->name('hotel_list');
 Route::get('/reservation_list', function () {
     return view('reservation_list');
