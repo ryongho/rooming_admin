@@ -87,27 +87,82 @@ class RoomController extends Controller
 
     }
 
-    public function list(Request $request){
-        $s_no = $request->start_no;
-        $row = $request->row;
+    public function room_list(Request $request){
 
-        $rows = Room::join('hotels', 'rooms.hotel_id', '=', 'hotels.id')
-                    ->select('*',
-                            'rooms.options as room_options',
-                            'hotels.options as hotel_options',
-                            DB::raw('(select file_name from room_images where room_images.room_id = rooms.id order by order_no asc limit 1 ) as thumb_nail')
-                            )
-                    ->where('rooms.id','>=',$s_no)->orderBy('rooms.id', 'desc')->limit($row)->get();
+        $page_no = 1;
+        if($request->page_no){
+            $page_no = $request->page_no;
+        }
 
-        $return = new \stdClass;
+        $row = 50;
+        
+        $offset = (($page_no-1) * $row);
 
-        $return->status = "200";
-        $return->cnt = count($rows);
-        $return->data = $rows ;
+        $start_date = "2021-01-01";
+        $end_date = date('Y-m-d H:i:s');
+        if($request->start_date){
+            $start_date = $request->start_date;
+        }
 
-        return response()->json($return, 200)->withHeaders([
-            'Content-Type' => 'application/json'
-        ]);;
+        if($request->end_date){
+            $end_date = $request->end_date;
+        }
+
+        $search_type = $request->search_type;
+        $search_keyword = $request->search_keyword;
+
+        $search = null;
+        if($search_type){
+            $search = $request->search_type.",".$request->search_keyword;
+        }
+
+
+        $rows = Room::select('*',
+                    DB::raw('(select name from hotels where rooms.hotel_id = hotels.id limit 1 ) as hotel_name'),
+                    DB::raw('(select file_name from room_images where room_images.room_id = rooms.id order by order_no asc limit 1 ) as thumb_nail')
+                )
+                ->when($start_date, function ($query, $start_date) {
+                    return $query->where('rooms.created_at' ,">=", $start_date);
+                })
+                ->when($end_date, function ($query, $end_date) {
+                    return $query->where('rooms.created_at' ,"<=", $end_date);
+                })
+                ->when($search , function ($query, $search) {
+                    $search_arr = explode(',',$search);
+                    return $query->where("rooms.".$search_arr[0] ,"like", "%".$search_arr[1]."%");
+                })
+                ->orderBy('rooms.id', 'desc')
+                ->offset($offset)
+                ->limit($row)->get();
+                        
+
+        $count = Room::when($start_date, function ($query, $start_date) {
+                    return $query->where('rooms.created_at' ,">=", $start_date);
+                })
+                ->when($end_date, function ($query, $end_date) {
+                    return $query->where('rooms.created_at' ,"<=", $end_date);
+                })
+                ->when($search , function ($query, $search) {
+                    $search_arr = explode(',',$search);
+                    return $query->where("rooms.".$search_arr[0] ,"like", "%".$search_arr[1]."%");
+                })
+                ->count();
+
+        $list = new \stdClass;
+
+        $list->status = "200";
+        $list->msg = "success";
+        
+        $list->page_no = $request->page_no;
+        $list->start_date = $start_date;
+        $list->end_date = $end_date;
+        $list->search_type = $request->search_type;
+        $list->search_keyword = $request->search_keyword;
+
+        $list->total_page = floor($count/$row)+1;
+        $list->data = $rows;
+        
+        return view('room_list', ['list' => $list]);
 
     }
 

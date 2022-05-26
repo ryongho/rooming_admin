@@ -209,6 +209,103 @@ class GoodsController extends Controller
 
     }
 
+
+    public function goods_list(Request $request){
+
+        $page_no = 1;
+        if($request->page_no){
+            $page_no = $request->page_no;
+        }
+
+        $row = 50;
+        
+        $offset = (($page_no-1) * $row);
+
+        $start_date = "2021-01-01";
+        $end_date = date('Y-m-d H:i:s');
+        if($request->start_date){
+            $start_date = $request->start_date;
+        }
+
+        if($request->end_date){
+            $end_date = $request->end_date;
+        }
+
+        $search_type = $request->search_type;
+        $search_keyword = $request->search_keyword;
+
+        $search = null;
+        if($search_type){
+            $search = $request->search_type.",".$request->search_keyword;
+        }
+
+
+        $rows = Goods::join('hotels', 'goods.hotel_id', '=', 'hotels.id')
+                        ->join('rooms', 'goods.room_id', '=', 'rooms.id')
+                        ->select(   'goods.id as goods_id', 
+                                    'hotels.type as shop_type', 
+                                    'rooms.name as room_name',
+                                    'hotels.name as hotel_name',
+                                    'goods.goods_name as name', 
+                                    'goods.price as price',
+                                    'hotels.address as address',
+                                    'goods.sale_price as sale_price',
+                                    'goods.start_date as start_date',
+                                    'goods.end_date as end_date',
+                                    'hotels.latitude as latitude',
+                                    'hotels.longtitude as longtitude',
+                                    'goods.id as goods_id',
+                                    'goods.sale as sale',
+                                    'goods.created_at as created_at',
+                                    DB::raw('(select file_name from goods_images where goods_images.goods_id = goods.id order by order_no asc limit 1 ) as thumb_nail'),
+                                    DB::raw('(select avg(grade) from reviews where reviews.goods_id = goods.id) as grade'),
+                                    DB::raw('(select count(grade) from reviews where reviews.goods_id = goods.id) as grade_cnt'),
+                        )         
+                        ->when($start_date, function ($query, $start_date) {
+                            return $query->where('goods.created_at' ,">=", $start_date);
+                        })
+                        ->when($end_date, function ($query, $end_date) {
+                            return $query->where('goods.created_at' ,"<=", $end_date);
+                        })
+                        ->when($search , function ($query, $search) {
+                            $search_arr = explode(',',$search);
+                            return $query->where("goods.goods_".$search_arr[0] ,"like", "%".$search_arr[1]."%");
+                        })
+                        ->orderBy('goods.id', 'desc')
+                        ->offset($offset)
+                        ->limit($row)->get();
+                        
+
+        $count = Goods::when($start_date, function ($query, $start_date) {
+                    return $query->where('goods.created_at' ,">=", $start_date);
+                })
+                ->when($end_date, function ($query, $end_date) {
+                    return $query->where('goods.created_at' ,"<=", $end_date);
+                })
+                ->when($search , function ($query, $search) {
+                    $search_arr = explode(',',$search);
+                    return $query->where("goods.goods_".$search_arr[0] ,"like", "%".$search_arr[1]."%");
+                })
+                ->count();
+
+        $list = new \stdClass;
+
+        $list->status = "200";
+        $list->msg = "success";
+        
+        $list->page_no = $request->page_no;
+        $list->start_date = $start_date;
+        $list->end_date = $end_date;
+        $list->search_type = $request->search_type;
+        $list->search_keyword = $request->search_keyword;
+
+        $list->total_page = floor($count/$row)+1;
+        $list->data = $rows;
+        
+        return view('goods_list', ['list' => $list]);
+
+    }
+
     public function list_by_hotel(Request $request){
         $hotel_id = $request->hotel_id;
 

@@ -69,7 +69,7 @@
     <div id="main">
       <form class="form-signin">
         <h1 class="h3 mb-3 font-weight-normal">Please Login</h1>
-        <input type="email" id="inputEmail" class="form-control" placeholder="Email" required autofocus>
+        <input type="email" id="inputEmail" class="form-control" placeholder="ID" required autofocus>
         <input type="password" id="inputPassword" class="form-control" placeholder="Password" required>
         <button class="btn btn-lg btn-primary btn-block" href="{{ route('login_proc') }}" id="login_btn" type="button">Login</button>
       </form>  

@@ -74,7 +74,7 @@ class UserController extends Controller
 
     public function login(Request $request){
 
-        $user = User::where('email' , $request->email)->where('leave','N')->first();
+        $user = User::where('email' , $request->email)->where('leave','N')->where('user_type','4')->first();
 
         $return = new \stdClass;
 
@@ -96,7 +96,7 @@ class UserController extends Controller
             $return->token = $token->plainTextToken;
             
             //dd($token->plainTextToken);
-            return redirect()->route('main');    
+            return redirect()->route('user_list');    
         }else{
             $return->status = "500";
             $return->msg = "아이디 또는 패스워드가 일치하지 않습니다.";
@@ -162,9 +162,16 @@ class UserController extends Controller
         
         $offset = (($page_no-1) * $row);
 
-        $start_date = $request->start_date;
-        $end_date = $request->end_date;
+        $start_date = "2021-01-01";
+        $end_date = date('Y-m-d H:i:s');
+        if($request->start_date){
+            $start_date = $request->start_date;
+        }
 
+        if($request->end_date){
+            $end_date = $request->end_date;
+        }
+        
         $search_type = $request->search_type;
         $search_keyword = $request->search_keyword;
 
@@ -189,7 +196,18 @@ class UserController extends Controller
                 ->orderBy('id', 'desc')
                 ->limit($row)->get();
 
-        $count = User::where('user_type','0')->count();
+        $count = User::where('user_type','0')
+                    ->when($start_date, function ($query, $start_date) {
+                        return $query->where('created_at' ,">=", $start_date);
+                    })
+                    ->when($end_date, function ($query, $end_date) {
+                        return $query->where('created_at' ,"<=", $end_date);
+                    })
+                    ->when($search , function ($query, $search) {
+                        $search_arr = explode(',',$search);
+                        return $query->where($search_arr[0] ,"like", "%".$search_arr[1]."%");
+                    })
+                    ->count();
 
         $list = new \stdClass;
 
@@ -197,8 +215,8 @@ class UserController extends Controller
         $list->msg = "success";
         
         $list->page_no = $request->page_no;
-        $list->start_date = $request->start_date;
-        $list->end_date = $request->end_date;
+        $list->start_date = $start_date;
+        $list->end_date = $end_date;
         $list->search_type = $request->search_type;
         $list->search_keyword = $request->search_keyword;
 

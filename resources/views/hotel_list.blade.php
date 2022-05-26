@@ -2,7 +2,7 @@
 
 @extends('layouts.app')
 
-@section('title', 'child')
+@section('title', '호텔목록')
 
 @section('sidebar')
     @parent
@@ -13,14 +13,12 @@
             
             <!-- Table Start -->
                     <div class="col-12 bg-white px-4 py-0" >
-                        <h6 class="mb-4" style="margin:30px 10px;">회원 목록</h6>
+                        <h6 class="mb-4" style="margin:30px 10px;">호텔 목록</h6>
                     </div>
                     <div class="col-12 bg-white px-4 py-0" style="float:left;">
-                    <select class="form-select search_type mb-1" id="search_type" aria-label=".search_type" style="width:auto;float:left;margin-right:10px;">
+                        <select class="form-select search_type mb-1" id="search_type" aria-label=".search_type" style="width:auto;float:left;margin-right:10px;">
                             <option selected value="">전체</option>
-                            <option value="name">고객명</option>
-                            <option value="email">이메일</option>
-                            <option value="phone">전화번호</option>
+                            <option value="name">호텔 이름</option>
                         </select>
                         <input type="hidden" id="temp_search_type" value="{{$list->search_type}}"/>
                         <input type="text" id="datePicker-start" class="form-control" style="width:10%;float:left;margin-right:10px;" value="{{$list->start_date}}" />
@@ -35,32 +33,27 @@
                             <table class="table table-bordered" style="font-size: 12px;">
                                 <thead>
                                     <tr>
-                                        <th scope="col">회원 아이디</th>
-                                        <th scope="col">고객명</th>
+                                        <th scope="col">아이디</th>
+                                        <th scope="col">카테고리</th>
+                                        <th scope="col">숙소 명</th>
+                                        <th scope="col">주소</th>
                                         <th scope="col">연락처</th>
-                                        <th scope="col">이메일</th>
-                                        <th scope="col">닉네임</th> 
-                                        <th scope="col">등록일</th>
-                                        <th scope="col">수정일</th>
-                                        <th scope="col" style="width:50px;">탈퇴여부</th>
-                                        
+                                        <th scope="col">등록일</th> 
                                     </tr>
                                 </thead>
                                 <tbody id="data_table">
                                     @forelse($list->data as $data)
                                         <tr>
                                             <td>{{ $data['id'] }}</td>
+                                            <td>{{ $data['type'] }}</td>
                                             <td>{{ $data['name'] }}</td>
-                                            <td>{{ $data['phone'] }}</td>
-                                            <td>{{ $data['email'] }}</td>
-                                            <td>{{ $data['nickname'] }}</td>
+                                            <td>{{ $data['address'] }} {{ $data['address_detail'] }}</td>
+                                            <td>{{ $data['tel'] }}</td>
                                             <td>{{ $data['created_at'] }}</td>
-                                            <td>{{ $data['updated_at'] }}</td>
-                                            <td>{{ $data['leave'] }}</td>
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="8" align="center">조회된 예약이 없습니다.</td>
+                                            <td colspan="8" align="center">조회된 회원이 없습니다.</td>
                                         </tr>
                                     @endforelse   
                                     
@@ -99,13 +92,14 @@
         $().ready(function(){
             $("#search_type").val($("#temp_search_type").val()).prop("selected", true);
         });
+        
         const get_list = function(page_no){
             const search_type = $("#search_type").val();
             const start_date = $("#datePicker-start").val();
             const end_date = $("#datePicker-end").val();
             const search_keyword = $("#search_keyword").val();
 
-            $url = '/user_list?page_no='+page_no+'&start_date='+start_date+'&end_date='+end_date+'&search_type='+search_type+'&search_keyword='+search_keyword;
+            $url = '/hotel_list?page_no='+page_no+'&start_date='+start_date+'&end_date='+end_date+'&search_type='+search_type+'&search_keyword='+search_keyword;
 
             window.location.replace($url);
             

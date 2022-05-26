@@ -151,23 +151,36 @@ class ReservationController extends Controller
         ]);;
     }
 
-    public function list(Request $request){
+    public function reservation_list(Request $request){
 
-        header("Access-Control-Allow-Origin: *");
+        $page_no = 1;
+        if($request->page_no){
+            $page_no = $request->page_no;
+        }
 
-        $s_no = $request->start_no;
-        $row = $request->row;
+        $row = 50;
+        
+        $offset = (($page_no-1) * $row);
 
-        $orderby = "reservations.created_at";
-        $order = "desc";
+        $start_date = "2021-01-01";
+        $end_date = date('Y-m-d H:i:s');
+        if($request->start_date){
+            $start_date = $request->start_date;
+        }
 
-        /*if($request->orderby == 'price'){
-            $orderby = ".price";
-            $order = "asc";
-        }else if($request->orderby == "distance"){
-            $orderby = "distance";
-            $order = "asc";
-        }*/
+        if($request->end_date){
+            $end_date = $request->end_date;
+        }
+
+        $search_type = $request->search_type;
+        $search_keyword = $request->search_keyword;
+
+        $search = null;
+        if($search_type){
+            $search = $request->search_type.",".$request->search_keyword;
+        }
+
+
 
         $rows = Reservation::join('hotels', 'reservations.hotel_id', '=', 'hotels.id')
                                 ->join('rooms', 'reservations.room_id', '=', 'rooms.id')
@@ -182,7 +195,6 @@ class ReservationController extends Controller
                                     'reservations.updated_at as updated_at',
                                     'reservations.status as status',
                                     'reservations.name as name',
-                                    'reservations.visit_way as visit_way',
                                     'reservations.phone as phone',
                                     'reservations.id as reservation_id',
                                     'hotels.type as shop_type', 
@@ -196,25 +208,49 @@ class ReservationController extends Controller
                                     'rooms.checkout as checkout',
                                     'goods.breakfast as breakfast',
                                     'hotels.parking as parking',
-                                    'hotels.latitude as latitude',
-                                    'hotels.longtitude as longtitude',
                                     'goods.id as goods_id',
-                                    DB::raw('(select file_name from goods_images where goods_images.goods_id = goods.id order by order_no asc limit 1 ) as thumb_nail'),
                         )         
-                        ->where('reservations.start_date' ,">=", $request->start_date)
-                        ->where('reservations.end_date' ,"<=", $request->end_date)
-                        ->orderBy($orderby, $order)
+                        ->when($start_date, function ($query, $start_date) {
+                            return $query->where('reservations.created_at' ,">=", $start_date);
+                        })
+                        ->when($end_date, function ($query, $end_date) {
+                            return $query->where('reservations.created_at' ,"<=", $end_date);
+                        })
+                        ->when($search , function ($query, $search) {
+                            $search_arr = explode(',',$search);
+                            return $query->where("reservations.".$search_arr[0] ,"like", "%".$search_arr[1]."%");
+                        })
+                        ->orderBy('reservations.id', 'desc')
+                        ->offset($offset)
                         ->limit($row)->get();
 
-        $return = new \stdClass;
+        $count = Reservation::when($start_date, function ($query, $start_date) {
+                    return $query->where('reservations.created_at' ,">=", $start_date);
+                })
+                ->when($end_date, function ($query, $end_date) {
+                    return $query->where('reservations.created_at' ,"<=", $end_date);
+                })
+                ->when($search , function ($query, $search) {
+                    $search_arr = explode(',',$search);
+                    return $query->where("reservations.".$search_arr[0] ,"like", "%".$search_arr[1]."%");
+                })
+                ->count();
 
-        $return->status = "200";
-        $return->cnt = count($rows);
-        $return->data = $rows ;
+        $list = new \stdClass;
 
-        return response()->json($return, 200)->withHeaders([
-            'Content-Type' => 'application/json'
-        ]);;
+        $list->status = "200";
+        $list->msg = "success";
+        
+        $list->page_no = $request->page_no;
+        $list->start_date = $start_date;
+        $list->end_date = $end_date;
+        $list->search_type = $request->search_type;
+        $list->search_keyword = $request->search_keyword;
+
+        $list->total_page = floor($count/$row)+1;
+        $list->data = $rows;
+        
+        return view('reservation_list', ['list' => $list]);
 
     }
 

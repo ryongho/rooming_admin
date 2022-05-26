@@ -125,6 +125,81 @@ class HotelController extends Controller
 
     }
 
+    public function hotel_list(Request $request){
+
+        $page_no = 1;
+        if($request->page_no){
+            $page_no = $request->page_no;
+        }
+
+        $row = 50;
+        
+        $offset = (($page_no-1) * $row);
+
+        $start_date = "2021-01-01";
+        $end_date = date('Y-m-d H:i:s');
+        if($request->start_date){
+            $start_date = $request->start_date;
+        }
+
+        if($request->end_date){
+            $end_date = $request->end_date;
+        }
+
+        $search_type = $request->search_type;
+        $search_keyword = $request->search_keyword;
+
+        $search = null;
+        if($search_type){
+            $search = $request->search_type.",".$request->search_keyword;
+        }
+
+
+        $rows = Hotel::when($start_date, function ($query, $start_date) {
+                    return $query->where('created_at' ,">=", $start_date);
+                })
+                ->when($end_date, function ($query, $end_date) {
+                    return $query->where('created_at' ,"<=", $end_date);
+                })
+                ->when($search , function ($query, $search) {
+                    $search_arr = explode(',',$search);
+                    return $query->where($search_arr[0] ,"like", "%".$search_arr[1]."%");
+                })
+                ->orderBy('id', 'desc')
+                ->offset($offset)
+                ->limit($row)->get();
+                        
+
+        $count = Hotel::when($start_date, function ($query, $start_date) {
+                    return $query->where('created_at' ,">=", $start_date);
+                })
+                ->when($end_date, function ($query, $end_date) {
+                    return $query->where('created_at' ,"<=", $end_date);
+                })
+                ->when($search , function ($query, $search) {
+                    $search_arr = explode(',',$search);
+                    return $query->where($search_arr[0] ,"like", "%".$search_arr[1]."%");
+                })
+                ->count();
+
+        $list = new \stdClass;
+
+        $list->status = "200";
+        $list->msg = "success";
+        
+        $list->page_no = $request->page_no;
+        $list->start_date = $start_date;
+        $list->end_date = $end_date;
+        $list->search_type = $request->search_type;
+        $list->search_keyword = $request->search_keyword;
+
+        $list->total_page = floor($count/$row)+1;
+        $list->data = $rows;
+        
+        return view('hotel_list', ['list' => $list]);
+
+    }
+
     public function list_by_partner(Request $request){
 
         $login_user = Auth::user();
