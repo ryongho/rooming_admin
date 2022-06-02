@@ -56,7 +56,7 @@
                                             <td>{{ $data['room_name'] }}</td>
                                             <td>{{ $data['goods_name'] }}</td>
                                             <td>{{ $data['start_date'] }} ~ {{ $data['start_date'] }}</td>
-                                            <td>{{ $data['status'] }}</td>
+                                            <td>{{ $list->status_arr[$data['status']] }}</td>
                                         </tr>
                                     @empty
                                         <tr>
