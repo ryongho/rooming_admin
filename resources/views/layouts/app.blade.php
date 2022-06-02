@@ -88,7 +88,8 @@
                         <a href="{{route('reservation_list')}}" class="dropdown-item">예약 목록</a>
                         <a href="{{route('hotel_list')}}" class="dropdown-item">호텔 목록</a> 
                         <a href="{{route('room_list')}}" class="dropdown-item">객실 목록</a> 
-                        <a href="{{route('goods_list')}}" class="dropdown-item">상품 목록</a> 
+                        <a href="{{route('goods_list')}}" class="dropdown-item">상품 목록</a>
+                        <a href="{{route('recommend_list')}}" class="dropdown-item">추천 상품 목록</a> 
                     </div>
                     <!--<a href="index.html" class="nav-item nav-link"><i class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
                     <div class="nav-item dropdown">

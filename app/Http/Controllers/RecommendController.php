@@ -85,6 +85,49 @@ class RecommendController extends Controller
 
     }
 
+
+    public function recommend_list(Request $request){
+
+
+        $rows = Recommend::join('goods', 'recommends.goods_id', '=', 'goods.id')
+                        ->join('rooms', 'goods.room_id', '=', 'rooms.id')
+                        ->join('hotels', 'goods.hotel_id', '=', 'hotels.id')
+                        ->select(   'hotels.type as shop_type', 
+                                    'rooms.name as room_name',
+                                    'hotels.name as hotel_name',
+                                    'goods.goods_name as goods_name', 
+                                    'goods.price as price',
+                                    'hotels.address as address',
+                                    'goods.sale_price as sale_price',
+                                    'goods.id as goods_id',
+                                    'recommends.order_no as order_no',
+                                    DB::raw('(select file_name from goods_images where goods_images.goods_id = goods.id order by order_no asc limit 1 ) as thumb_nail'),
+                        )  
+                        ->orderBy('order_no','asc')
+                        ->get();
+
+
+        $list = new \stdClass;
+
+        $list->status = "200";
+        $list->msg = "success";
+        $list->data = $rows;
+        
+        return view('recommend_list', ['list' => $list]);
+    }
+
+    public function change_recommend(Request $request){
+
+        $order_no = $request->order_no;
+        $goods_id = $request->goods_id;
+
+        $result = Recommend::where('order_no', $order_no)->update(['goods_id' => $goods_id]);
+        
+        return redirect()->route('recommend_list');
+    }
+
+    
+
     
 
 
