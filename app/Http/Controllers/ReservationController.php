@@ -240,12 +240,14 @@ class ReservationController extends Controller
 
         $list->status = "200";
         $list->msg = "success";
-
+        
         $status_arr = array();
         $status_arr['W'] = "예약 대기";
         $status_arr['S'] = "예약 확정"; 
         $status_arr['C'] = "예약 취소";
         $status_arr['P'] = "입금확인대기중";
+        $status_arr['X'] = "취소 신청";
+        $status_arr['R'] = "환불완료";
         
         $list->page_no = $request->page_no;
         $list->start_date = $start_date;
