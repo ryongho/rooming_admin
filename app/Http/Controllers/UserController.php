@@ -174,7 +174,11 @@ class UserController extends Controller
         
         $search_type = $request->search_type;
         $search_keyword = $request->search_keyword;
-
+        $leave = null;
+        if($request->leave != ""){
+            $leave = $request->leave;
+        }
+        
         $search = null;
         if($search_type){
             $search = $request->search_type.",".$request->search_keyword;
@@ -192,6 +196,9 @@ class UserController extends Controller
                     $search_arr = explode(',',$search);
                     return $query->where($search_arr[0] ,"like", "%".$search_arr[1]."%");
                 })
+                ->when($leave , function ($query, $leave) {
+                    return $query->where('leave', $leave);
+                })
                 ->offset($offset)
                 ->orderBy('id', 'desc')
                 ->limit($row)->get();
@@ -207,6 +214,9 @@ class UserController extends Controller
                         $search_arr = explode(',',$search);
                         return $query->where($search_arr[0] ,"like", "%".$search_arr[1]."%");
                     })
+                    ->when($leave , function ($query, $leave) {
+                        return $query->where('leave', $leave);
+                    })
                     ->count();
 
         $list = new \stdClass;
@@ -219,7 +229,9 @@ class UserController extends Controller
         $list->end_date = $end_date;
         $list->search_type = $request->search_type;
         $list->search_keyword = $request->search_keyword;
+        $list->leave = $request->leave;
 
+        $list->total_cnt = $count;
         $list->total_page = floor($count/$row)+1;
         $list->data = $rows;
         

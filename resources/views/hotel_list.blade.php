@@ -19,12 +19,14 @@
                         <select class="form-select search_type mb-1" id="search_type" aria-label=".search_type" style="width:auto;float:left;margin-right:10px;">
                             <option selected value="">전체</option>
                             <option value="name">호텔 이름</option>
+                            <option value="type">카테고리</option>
                         </select>
                         <input type="hidden" id="temp_search_type" value="{{$list->search_type}}"/>
                         <input type="text" id="datePicker-start" class="form-control" style="width:10%;float:left;margin-right:10px;" value="{{$list->start_date}}" />
                         <input type="text" id="datePicker-end" class="form-control" style="width:10%;float:left;margin-right:10px;" value="{{$list->end_date}}" />
                         <input class="form-control border-1" id="search_keyword" type="search" placeholder="Search" value="{{$list->search_keyword}}" style="width:30%;float:left;margin-right:\10px;">
                         <button type="button" class="btn btn-outline-secondary m-2" id="btn_search" style="width:auto;float:left;margin:0px;" onclick="get_list(1)" >검색</button>
+                        <div class="div_total_cnt" style="background:#009CFF;color:white;width:100px;height:40px;float:right;right:10px;padding:10px;text-align:center;margin-right:10%;">총 {{$list->total_cnt}} 건</div>
                     </div>
             
                     <div class="col-12">

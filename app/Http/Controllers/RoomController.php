@@ -117,7 +117,8 @@ class RoomController extends Controller
         }
 
 
-        $rows = Room::select('*',
+        $rows = Room::join('hotels', 'rooms.hotel_id', '=', 'hotels.id')
+                ->select('*',
                     DB::raw('(select name from hotels where rooms.hotel_id = hotels.id limit 1 ) as hotel_name'),
                     DB::raw('(select file_name from room_images where room_images.room_id = rooms.id order by order_no asc limit 1 ) as thumb_nail')
                 )
@@ -129,14 +130,19 @@ class RoomController extends Controller
                 })
                 ->when($search , function ($query, $search) {
                     $search_arr = explode(',',$search);
-                    return $query->where("rooms.".$search_arr[0] ,"like", "%".$search_arr[1]."%");
+                    if($search_arr[0] == "hotel_name"){
+                        return $query->where("hotels.name" ,"like", "%".$search_arr[1]."%");
+                    }else{
+                        return $query->where("rooms.".$search_arr[0] ,"like", "%".$search_arr[1]."%");
+                    }
                 })
                 ->orderBy('rooms.id', 'desc')
                 ->offset($offset)
                 ->limit($row)->get();
                         
 
-        $count = Room::when($start_date, function ($query, $start_date) {
+        $count = Room::join('hotels', 'rooms.hotel_id', '=', 'hotels.id')
+                ->when($start_date, function ($query, $start_date) {
                     return $query->where('rooms.created_at' ,">=", $start_date);
                 })
                 ->when($end_date, function ($query, $end_date) {
@@ -144,7 +150,11 @@ class RoomController extends Controller
                 })
                 ->when($search , function ($query, $search) {
                     $search_arr = explode(',',$search);
-                    return $query->where("rooms.".$search_arr[0] ,"like", "%".$search_arr[1]."%");
+                    if($search_arr[0] == "hotel_name"){
+                        return $query->where("hotels.name" ,"like", "%".$search_arr[1]."%");
+                    }else{
+                        return $query->where("rooms.".$search_arr[0] ,"like", "%".$search_arr[1]."%");
+                    }
                 })
                 ->count();
 
@@ -158,6 +168,7 @@ class RoomController extends Controller
         $list->end_date = $end_date;
         $list->search_type = $request->search_type;
         $list->search_keyword = $request->search_keyword;
+        $list->total_cnt = $count;
 
         $list->total_page = floor($count/$row)+1;
         $list->data = $rows;

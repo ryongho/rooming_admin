@@ -16,17 +16,24 @@
                         <h6 class="mb-4" style="margin:30px 10px;">회원 목록</h6>
                     </div>
                     <div class="col-12 bg-white px-4 py-0" style="float:left;">
-                    <select class="form-select search_type mb-1" id="search_type" aria-label=".search_type" style="width:auto;float:left;margin-right:10px;">
+                        <select class="form-select search_type mb-1" id="search_type" aria-label=".search_type" style="width:auto;float:left;margin-right:10px;">
                             <option selected value="">전체</option>
                             <option value="name">고객명</option>
                             <option value="email">이메일</option>
                             <option value="phone">전화번호</option>
                         </select>
+                        <select class="form-select search_type mb-1" id="leave" aria-label=".search_type" style="width:auto;float:left;margin-right:10px;">
+                            <option selected value="">전체</option>
+                            <option value="N">가입자</option>
+                            <option value="Y">탈퇴자</option>
+                        </select>
                         <input type="hidden" id="temp_search_type" value="{{$list->search_type}}"/>
+                        <input type="hidden" id="temp_leave" value="{{$list->leave}}"/>
                         <input type="text" id="datePicker-start" class="form-control" style="width:10%;float:left;margin-right:10px;" value="{{$list->start_date}}" />
                         <input type="text" id="datePicker-end" class="form-control" style="width:10%;float:left;margin-right:10px;" value="{{$list->end_date}}" />
                         <input class="form-control border-1" id="search_keyword" type="search" placeholder="Search" value="{{$list->search_keyword}}" style="width:30%;float:left;margin-right:\10px;">
                         <button type="button" class="btn btn-outline-secondary m-2" id="btn_search" style="width:auto;float:left;margin:0px;" onclick="get_list(1)" >검색</button>
+                        <div class="div_total_cnt" style="background:#009CFF;color:white;width:100px;height:40px;float:right;right:10px;padding:10px;text-align:center;margin-right:10%;">총 {{$list->total_cnt}} 명</div>
                     </div>
             
                     <div class="col-12">
@@ -98,14 +105,16 @@
     <script>
         $().ready(function(){
             $("#search_type").val($("#temp_search_type").val()).prop("selected", true);
+            $("#leave").val($("#temp_leave").val()).prop("selected", true);
         });
         const get_list = function(page_no){
             const search_type = $("#search_type").val();
             const start_date = $("#datePicker-start").val();
             const end_date = $("#datePicker-end").val();
             const search_keyword = $("#search_keyword").val();
+            const leave = $("#leave").val();
 
-            $url = '/user_list?page_no='+page_no+'&start_date='+start_date+'&end_date='+end_date+'&search_type='+search_type+'&search_keyword='+search_keyword;
+            $url = '/user_list?page_no='+page_no+'&start_date='+start_date+'&end_date='+end_date+'&search_type='+search_type+'&search_keyword='+search_keyword+'&leave='+leave;
 
             window.location.replace($url);
             

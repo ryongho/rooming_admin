@@ -192,6 +192,7 @@ class HotelController extends Controller
         $list->end_date = $end_date;
         $list->search_type = $request->search_type;
         $list->search_keyword = $request->search_keyword;
+        $list->total_cnt = $count;
 
         $list->total_page = floor($count/$row)+1;
         $list->data = $rows;

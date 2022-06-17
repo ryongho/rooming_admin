@@ -197,6 +197,7 @@ class ReservationController extends Controller
                                     'reservations.name as name',
                                     'reservations.phone as phone',
                                     'reservations.id as reservation_id',
+                                    'reservations.price as reservation_price',
                                     'hotels.type as shop_type', 
                                     'rooms.name as room_name',
                                     'hotels.name as hotel_name',
@@ -218,7 +219,12 @@ class ReservationController extends Controller
                         })
                         ->when($search , function ($query, $search) {
                             $search_arr = explode(',',$search);
-                            return $query->where("reservations.".$search_arr[0] ,"like", "%".$search_arr[1]."%");
+                            if($search_arr[0] == "hotel_name"){
+                                return $query->where("hotels.name" ,"like", "%".$search_arr[1]."%");
+                            }else{
+                                return $query->where("reservations.".$search_arr[0] ,"like", "%".$search_arr[1]."%");
+                            }
+                            
                         })
                         ->orderBy('reservations.id', 'desc')
                         ->offset($offset)
@@ -232,7 +238,11 @@ class ReservationController extends Controller
                 })
                 ->when($search , function ($query, $search) {
                     $search_arr = explode(',',$search);
-                    return $query->where("reservations.".$search_arr[0] ,"like", "%".$search_arr[1]."%");
+                    if($search_arr[0] == "hotel_name"){
+                        return $query->where("hotels.name" ,"like", "%".$search_arr[1]."%");
+                    }else{
+                        return $query->where("reservations.".$search_arr[0] ,"like", "%".$search_arr[1]."%");
+                    }
                 })
                 ->count();
 
@@ -255,7 +265,8 @@ class ReservationController extends Controller
         $list->search_type = $request->search_type;
         $list->search_keyword = $request->search_keyword;
         $list->status_arr = $status_arr;
-
+        
+        $list->total_cnt = $count;
         $list->total_page = floor($count/$row)+1;
         $list->data = $rows;
         

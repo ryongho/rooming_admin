@@ -165,6 +165,10 @@ class PartnerController extends Controller
         if($request->end_date){
             $end_date = $request->end_date;
         }
+        $leave = null;
+        if($request->leave != ""){
+            $leave = $request->leave;
+        }
 
         $search_type = $request->search_type;
         $search_keyword = $request->search_keyword;
@@ -182,6 +186,9 @@ class PartnerController extends Controller
                 ->when($end_date, function ($query, $end_date) {
                     return $query->where('created_at' ,"<=", $end_date);
                 })
+                ->when($leave , function ($query, $leave) {
+                    return $query->where('leave', $leave);
+                })
                 ->when($search , function ($query, $search) {
                     $search_arr = explode(',',$search);
                     return $query->where($search_arr[0] ,"like", "%".$search_arr[1]."%");
@@ -196,6 +203,9 @@ class PartnerController extends Controller
                 })
                 ->when($end_date, function ($query, $end_date) {
                     return $query->where('created_at' ,"<=", $end_date);
+                })
+                ->when($leave , function ($query, $leave) {
+                    return $query->where('leave', $leave);
                 })
                 ->when($search , function ($query, $search) {
                     $search_arr = explode(',',$search);
@@ -212,6 +222,9 @@ class PartnerController extends Controller
         $list->end_date = $end_date;
         $list->search_type = $request->search_type;
         $list->search_keyword = $request->search_keyword;
+        $list->leave = $request->leave;
+
+        $list->total_cnt = $count;
 
         $list->total_page = floor($count/$row)+1;
         $list->data = $rows;

@@ -269,14 +269,19 @@ class GoodsController extends Controller
                         })
                         ->when($search , function ($query, $search) {
                             $search_arr = explode(',',$search);
-                            return $query->where("goods.goods_".$search_arr[0] ,"like", "%".$search_arr[1]."%");
+                            if($search_arr[0] == "hotel_name"){
+                                return $query->where("hotels.name" ,"like", "%".$search_arr[1]."%");
+                            }else{
+                                return $query->where("goods.goods_".$search_arr[0] ,"like", "%".$search_arr[1]."%");
+                            }
                         })
                         ->orderBy('goods.id', 'desc')
                         ->offset($offset)
                         ->limit($row)->get();
                         
 
-        $count = Goods::when($start_date, function ($query, $start_date) {
+        $count = Goods::join('hotels', 'goods.hotel_id', '=', 'hotels.id')
+                ->when($start_date, function ($query, $start_date) {
                     return $query->where('goods.created_at' ,">=", $start_date);
                 })
                 ->when($end_date, function ($query, $end_date) {
@@ -284,7 +289,11 @@ class GoodsController extends Controller
                 })
                 ->when($search , function ($query, $search) {
                     $search_arr = explode(',',$search);
-                    return $query->where("goods.goods_".$search_arr[0] ,"like", "%".$search_arr[1]."%");
+                    if($search_arr[0] == "hotel_name"){
+                        return $query->where("hotels.name" ,"like", "%".$search_arr[1]."%");
+                    }else{
+                        return $query->where("goods.goods_".$search_arr[0] ,"like", "%".$search_arr[1]."%");
+                    }
                 })
                 ->count();
 
@@ -298,6 +307,7 @@ class GoodsController extends Controller
         $list->end_date = $end_date;
         $list->search_type = $request->search_type;
         $list->search_keyword = $request->search_keyword;
+        $list->total_cnt = $count;
 
         $list->total_page = floor($count/$row)+1;
         $list->data = $rows;
