@@ -230,7 +230,8 @@ class ReservationController extends Controller
                         ->offset($offset)
                         ->limit($row)->get();
 
-        $count = Reservation::when($start_date, function ($query, $start_date) {
+        $count = Reservation::join('hotels', 'reservations.hotel_id', '=', 'hotels.id')
+                ->when($start_date, function ($query, $start_date) {
                     return $query->where('reservations.created_at' ,">=", $start_date);
                 })
                 ->when($end_date, function ($query, $end_date) {
