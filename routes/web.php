@@ -13,6 +13,9 @@ use App\Http\Controllers\HotelController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\GoodsController;
 use App\Http\Controllers\RecommendController;
+use App\Http\Controllers\EventController;
+use App\Http\Controllers\NoticeController;
+use App\Http\Controllers\FaqController;
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
@@ -48,6 +51,18 @@ Route::middleware('auth:sanctum')->get('/room_list', [RoomController::class, 'ro
 Route::middleware('auth:sanctum')->get('/goods_list', [GoodsController::class, 'goods_list'])->name('goods_list');
 Route::middleware('auth:sanctum')->get('/recommend_list', [RecommendController::class, 'recommend_list'])->name('recommend_list');
 Route::middleware('auth:sanctum')->get('/change_recommend', [RecommendController::class, 'change_recommend'])->name('change_recommend');
+Route::middleware('auth:sanctum')->get('/event_list', [EventController::class, 'event_list'])->name('event_list');
+Route::middleware('auth:sanctum')->get('/notice_list', [NoticeController::class, 'notice_list'])->name('notice_list');
+Route::middleware('auth:sanctum')->get('/faq_list', [FaqController::class, 'faq_list'])->name('faq_list');
+
+Route::middleware('auth:sanctum')->get('/save_event', [EventController::class, 'save'])->name('save_event');
+Route::middleware('auth:sanctum')->get('/delete_event', [EventController::class, 'delete'])->name('delete_event');
+
+Route::middleware('auth:sanctum')->get('/save_notice', [NoticeController::class, 'save'])->name('save_notice');
+Route::middleware('auth:sanctum')->get('/delete_notice', [NoticeController::class, 'delete'])->name('delete_notice');
+
+Route::middleware('auth:sanctum')->get('/save_faq', [FaqController::class, 'save'])->name('save_faq');
+Route::middleware('auth:sanctum')->get('/delete_faq', [FaqController::class, 'delete'])->name('delete_faq');
 
 
 

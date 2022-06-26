@@ -138,6 +138,103 @@ class NoticeController extends Controller
 
     }
 
+    public function notice_list(Request $request){
+
+
+        $page_no = 1;
+        if($request->page_no){
+            $page_no = $request->page_no;
+        }
+
+        $row = 50;
+        
+        $offset = (($page_no-1) * $row);
+
+
+        $rows = Notice::orderBy('id', 'desc')
+                ->offset($offset)
+                ->limit($row)->get();
+                        
+
+        $count = Notice::count();
+
+        $list = new \stdClass;
+
+        $list->status = "200";
+        $list->msg = "success";
+        
+        $list->page_no = $request->page_no;
+        $list->total_cnt = $count;
+
+        $list->total_page = floor($count/$row)+1;
+        $list->data = $rows;
+        
+        return view('notice_list', ['list' => $list]);
+
+    }
+
+    public function save(Request $request)
+    {
+        
+        $return = new \stdClass;   
+
+        $login_user = Auth::user();
+
+        $resutl;
+        
+        if($request->id){
+            $result = Notice::where('id',$request->id)
+                ->update([
+                    'title'=> $request->title ,
+                    'content'=> $request->content ,
+                    'writer'=> $login_user->getId(),
+                    'created_at'=> Carbon::now(),
+                ]);
+            
+        }else{
+
+            $result = Notice::insertGetId([
+                'title'=> $request->title ,
+                'content'=> $request->content ,
+                'writer'=> $login_user->getId(),
+                'created_at'=> Carbon::now(),
+            ]);
+        }
+        
+
+        if($result){ //DB 입력 성공
+            $return->status = "200";
+            $return->msg = "success";
+        }else{
+            $return->status = "501";
+            $return->msg = "fail";
+        }
+        
+
+        return redirect()->route('notice_list');
+    }
+
+    public function delete(Request $request)
+    {
+        
+        $return = new \stdClass;   
+
+        $login_user = Auth::user();
+
+        $result = Notice::where('id',$request->id)->delete();
+
+        if($result){ //DB 입력 성공
+            $return->status = "200";
+            $return->msg = "success";
+        }else{
+            $return->status = "501";
+            $return->msg = "fail";
+        }
+        
+
+        return redirect()->route('notice_list');
+    }
+
     
 
 
