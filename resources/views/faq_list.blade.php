@@ -66,7 +66,7 @@
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary btn_close" data-dismiss="modal">Close</button>
-                                <button type="button" class="btn btn-primary" onclick="save()">Save changes</button>
+                                <button type="button" class="btn btn-primary" onclick="save()">Save</button>
                             </div>
                             </div>
                         </div>
