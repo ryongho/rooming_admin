@@ -64,7 +64,7 @@
                                             <td>{{ $data['hotel_name'] }}</td>
                                             <td>{{ $data['room_name'] }}</td>
                                             <td>{{ $data['goods_name'] }}</td>
-                                            <td>{{ $data['start_date'] }} ~ {{ $data['start_date'] }}</td>
+                                            <td>{{ $data['start_date'] }} ~ {{ $data['end_date'] }}</td>
                                             <td>{{ $list->status_arr[$data['status']] }}</td>
                                             <td>{{ number_format($data['reservation_price']) }}원 ({{ number_format($data['price']) }}원)</td>
                                         </tr>
