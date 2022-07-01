@@ -21,6 +21,11 @@
                             <option value="name">상품 이름</option>
                             <option value="hotel_name">숙소 이름</option>
                         </select>
+                        <select class="form-select search_type mb-1" id="sale" aria-label=".sale_type" style="width:auto;float:left;margin-right:10px;">
+                            <option selected value="">전체</option>
+                            <option value="Y">판매중</option>
+                            <option value="N">판매중지</option>
+                        </select>
                         <input type="hidden" id="temp_search_type" value="{{$list->search_type}}"/>
                         <input type="text" id="datePicker-start" class="form-control" style="width:10%;float:left;margin-right:10px;" value="{{$list->start_date}}" />
                         <input type="text" id="datePicker-end" class="form-control" style="width:10%;float:left;margin-right:10px;" value="{{$list->end_date}}" />
@@ -98,6 +103,7 @@
     <script>
         $().ready(function(){
             $("#search_type").val($("#temp_search_type").val()).prop("selected", true);
+            $("#sale").val("{{$list->sale}}").prop("selected", true);
         });
         
         const get_list = function(page_no){
@@ -105,8 +111,9 @@
             const start_date = $("#datePicker-start").val();
             const end_date = $("#datePicker-end").val();
             const search_keyword = $("#search_keyword").val();
+            const sale = $("#sale").val();
 
-            $url = '/goods_list?page_no='+page_no+'&start_date='+start_date+'&end_date='+end_date+'&search_type='+search_type+'&search_keyword='+search_keyword;
+            $url = '/goods_list?page_no='+page_no+'&start_date='+start_date+'&end_date='+end_date+'&search_type='+search_type+'&search_keyword='+search_keyword+'&sale='+sale;
 
             window.location.replace($url);
             

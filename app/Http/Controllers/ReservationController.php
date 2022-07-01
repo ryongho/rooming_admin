@@ -179,6 +179,7 @@ class ReservationController extends Controller
         if($search_type){
             $search = $request->search_type.",".$request->search_keyword;
         }
+        $status_type = $request->status_type;
 
 
 
@@ -226,11 +227,25 @@ class ReservationController extends Controller
                             }
                             
                         })
+                        ->when( $status_type, function ($query, $status_type) {
+                            
+                            if($status_type == "W"){
+                                return $query->where("reservations.status" , "W");
+                            }else if($status_type == "S"){
+                                return $query->where("reservations.status" , "S");
+                            }else if($status_type == "C"){
+                                $cancel_status_arr = ['C','X','R'];
+                                return $query->whereIn("reservations.status" , $cancel_status_arr);
+                            }
+                            
+                        })
                         ->orderBy('reservations.id', 'desc')
                         ->offset($offset)
                         ->limit($row)->get();
 
         $count = Reservation::join('hotels', 'reservations.hotel_id', '=', 'hotels.id')
+                ->join('rooms', 'reservations.room_id', '=', 'rooms.id')
+                ->join('goods', 'reservations.goods_id', '=', 'goods.id')
                 ->when($start_date, function ($query, $start_date) {
                     return $query->where('reservations.created_at' ,">=", $start_date);
                 })
@@ -245,7 +260,50 @@ class ReservationController extends Controller
                         return $query->where("reservations.".$search_arr[0] ,"like", "%".$search_arr[1]."%");
                     }
                 })
+                ->when( $status_type, function ($query, $status_type) {
+                            
+                    if($status_type == "W"){
+                        return $query->where("reservations.status" , "W");
+                    }else if($status_type == "S"){
+                        return $query->where("reservations.status" , "S");
+                    }else if($status_type == "C"){
+                        $cancel_status_arr = ['C','X','R'];
+                        return $query->whereIn("reservations.status" , $cancel_status_arr);
+                    }
+                    
+                })
                 ->count();
+
+        $total_price = Reservation::join('hotels', 'reservations.hotel_id', '=', 'hotels.id')
+                ->join('rooms', 'reservations.room_id', '=', 'rooms.id')
+                ->join('goods', 'reservations.goods_id', '=', 'goods.id')
+                ->when($start_date, function ($query, $start_date) {
+                    return $query->where('reservations.created_at' ,">=", $start_date);
+                })
+                ->when($end_date, function ($query, $end_date) {
+                    return $query->where('reservations.created_at' ,"<=", $end_date);
+                })
+                ->when($search , function ($query, $search) {
+                    $search_arr = explode(',',$search);
+                    if($search_arr[0] == "hotel_name"){
+                        return $query->where("hotels.name" ,"like", "%".$search_arr[1]."%");
+                    }else{
+                        return $query->where("reservations.".$search_arr[0] ,"like", "%".$search_arr[1]."%");
+                    }
+                })
+                ->when( $status_type, function ($query, $status_type) {
+                                    
+                    if($status_type == "W"){
+                        return $query->where("reservations.status" , "W");
+                    }else if($status_type == "S"){
+                        return $query->where("reservations.status" , "S");
+                    }else if($status_type == "C"){
+                        $cancel_status_arr = ['C','X','R'];
+                        return $query->whereIn("reservations.status" , $cancel_status_arr);
+                    }
+                    
+                })
+                ->sum('reservations.price');
 
         $list = new \stdClass;
 
@@ -265,9 +323,11 @@ class ReservationController extends Controller
         $list->end_date = $end_date;
         $list->search_type = $request->search_type;
         $list->search_keyword = $request->search_keyword;
+        $list->status_type = $request->status_type;
         $list->status_arr = $status_arr;
         
         $list->total_cnt = $count;
+        $list->total_price = $total_price;
         $list->total_page = floor($count/$row)+1;
         $list->data = $rows;
         

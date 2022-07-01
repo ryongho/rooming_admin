@@ -239,6 +239,8 @@ class GoodsController extends Controller
             $search = $request->search_type.",".$request->search_keyword;
         }
 
+        $sale = $request->sale;
+
 
         $rows = Goods::join('hotels', 'goods.hotel_id', '=', 'hotels.id')
                         ->join('rooms', 'goods.room_id', '=', 'rooms.id')
@@ -263,6 +265,9 @@ class GoodsController extends Controller
                         )         
                         ->when($start_date, function ($query, $start_date) {
                             return $query->where('goods.created_at' ,">=", $start_date);
+                        })
+                        ->when($sale, function ($query, $sale) {
+                            return $query->where('goods.sale', $sale);
                         })
                         ->when($end_date, function ($query, $end_date) {
                             return $query->where('goods.created_at' ,"<=", $end_date);
@@ -308,6 +313,7 @@ class GoodsController extends Controller
         $list->search_type = $request->search_type;
         $list->search_keyword = $request->search_keyword;
         $list->total_cnt = $count;
+        $list->sale = $sale;
 
         $list->total_page = floor($count/$row)+1;
         $list->data = $rows;
