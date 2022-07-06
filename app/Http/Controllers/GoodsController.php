@@ -292,6 +292,9 @@ class GoodsController extends Controller
                 ->when($end_date, function ($query, $end_date) {
                     return $query->where('goods.created_at' ,"<=", $end_date);
                 })
+                ->when($sale, function ($query, $sale) {
+                    return $query->where('goods.sale', $sale);
+                })
                 ->when($search , function ($query, $search) {
                     $search_arr = explode(',',$search);
                     if($search_arr[0] == "hotel_name"){
