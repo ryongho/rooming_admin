@@ -51,6 +51,7 @@
                                         <th scope="col">등록일</th>
                                         <th scope="col">수정일</th>
                                         <th scope="col" style="width:50px;">탈퇴여부</th>
+                                        <th scope="col" style="width:50px;">숙소등록여부</th>
                                         
                                     </tr>
                                 </thead>
@@ -65,6 +66,11 @@
                                             <td>{{ $data['created_at'] }}</td>
                                             <td>{{ $data['updated_at'] }}</td>
                                             <td>{{ $data['leave'] }}</td>
+                                            @if($data['hotel_type'] != "")
+                                                <td>{{ $data['hotel_type'] }}</td>
+                                            @else
+                                                <td>미등록</td>
+                                            @endif
                                         </tr>
                                     @empty
                                         <tr>

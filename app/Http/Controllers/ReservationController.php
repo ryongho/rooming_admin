@@ -335,18 +335,15 @@ class ReservationController extends Controller
 
     }
 
-    public function list_by_hotel(Request $request){
+    public function get_list_by_user(Request $request){
         
-        $s_no = $request->start_no;
-        $row = $request->row;
-
-        $login_user = Auth::user();
-        $user_id = $login_user->getId();
-
-        $hotel_info = Hotel::where('partner_id',$user_id)->first();
         
+        $user_id = $request->user_id;
+
         $orderby = "reservations.created_at";
         $order = "desc";
+
+        $user_info = User::where('id',$user_id)->first();
 
         $rows = Reservation::join('hotels', 'reservations.hotel_id', '=', 'hotels.id')
                                 ->join('rooms', 'reservations.room_id', '=', 'rooms.id')
@@ -355,42 +352,40 @@ class ReservationController extends Controller
                                     'reservations.reservation_no as reservation_no', 
                                     'reservations.start_date as start_date', 
                                     'reservations.end_date as end_date', 
-                                    'reservations.nights as nights', 
-                                    'reservations.peoples as peoples', 
                                     'reservations.created_at as created_at',
                                     'reservations.updated_at as updated_at',
                                     'reservations.status as status',
                                     DB::raw('(select name from users where reservations.user_id = users.id) as name'),
-                                    'reservations.visit_way as visit_way',
-                                    'reservations.phone as phone',
                                     'reservations.id as reservation_id',
                                     'hotels.type as shop_type', 
                                     'rooms.name as room_name',
                                     'hotels.name as hotel_name',
                                     'goods.goods_name as goods_name', 
-                                    'goods.price as price',
-                                    'hotels.address as address',
                                     'reservations.price as sale_price',
-                                    'rooms.checkin as checkin',
-                                    'rooms.checkout as checkout',
-                                    'goods.breakfast as breakfast',
-                                    'hotels.parking as parking',
-                                    'hotels.latitude as latitude',
-                                    'hotels.longtitude as longtitude',
-                                    'goods.id as goods_id',
-                                    DB::raw('(select file_name from goods_images where goods_images.goods_id = goods.id order by order_no asc limit 1 ) as thumb_nail'),
-                        )         
-                        ->where('reservations.start_date' ,">=", $request->start_date)
-                        ->where('reservations.end_date' ,"<=", $request->end_date)
-                        ->where('reservations.hotel_id','=',$hotel_info->id)
+                        )
+                        ->where('user_id',$user_id)         
                         ->orderBy($orderby, $order)
-                        ->limit($row)->get();
+                        ->get();
 
         $return = new \stdClass;
 
+        $status_arr = array();
+        $status_arr['W'] = "예약 대기";
+        $status_arr['S'] = "예약 확정"; 
+        $status_arr['C'] = "예약 취소";
+        $status_arr['P'] = "입금확인대기중";
+        $status_arr['X'] = "취소 신청";
+        $status_arr['R'] = "환불완료";
+
+        foreach($rows as $row){
+            $row['status'] = $status_arr[$row['status']];
+        }
+
         $return->status = "200";
         $return->cnt = count($rows);
+        $return->user_info = $user_info;
         $return->data = $rows ;
+
 
         return response()->json($return, 200)->withHeaders([
             'Content-Type' => 'application/json'

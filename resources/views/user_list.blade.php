@@ -50,6 +50,7 @@
                                         <th scope="col">등록일</th>
                                         <th scope="col">수정일</th>
                                         <th scope="col" style="width:50px;">탈퇴여부</th>
+                                        <th scope="col" style="width:50px;">예약 건</th>
                                         
                                     </tr>
                                 </thead>
@@ -64,6 +65,11 @@
                                             <td>{{ $data['created_at'] }}</td>
                                             <td>{{ $data['updated_at'] }}</td>
                                             <td>{{ $data['leave'] }}</td>
+                                            @if($data['reservation_cnt'] > 0)
+                                                <td><span onclick="pop_reservations('{{ $data['id'] }}')" style="cursor:pointer;color:blue;">{{ $data['reservation_cnt'] }}</span></td>
+                                            @else
+                                                <td>{{ $data['reservation_cnt'] }}</td>
+                                            @endif
                                         </tr>
                                     @empty
                                         <tr>
@@ -73,6 +79,40 @@
                                     
                                 </tbody>
                             </table>
+                        </div>
+                    </div>
+
+                    <div class="modal fade" id="detailModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">예약 내역</h5>
+                                    <button type="button" class="close btn_close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+    
+                                     <table class="table table-bordered" style="font-size: 12px;">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">예약 번호</th>
+                                                <th scope="col">예약 상품</th>
+                                                <th scope="col">예약 일시</th>
+                                                <th scope="col">상태</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="reservation_table">
+                                            
+                                        </tbody>
+                                    </table>
+
+                                    <input type="hidden" id="modal_id" value="">
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary btn_close" data-dismiss="modal">Close</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     
@@ -119,6 +159,56 @@
             window.location.replace($url);
             
         }
+
+        const pop_reservations = function(user_id){
+
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                }
+            });
+
+            $.ajax({
+                method: "POST",
+                url: "/get_reservation_list_by_user",
+                data: { user_id : user_id},
+            })
+            .done(function(data) {
+                const status = data.status;
+                //alert(data.status);
+                if(data.status == "200"){
+                    
+                    const title = data.user_info['name']+"님의 예약 내용";
+                    var content = "";
+
+                    data.data.forEach(function(row){
+                        content += "<tr><td>"+row['reservation_no']+"</td><td>"+row['goods_name']+"</td><td>"+row['created_at']+"</td><td>"+row['status']+"</td></tr>";
+                        
+                    });
+
+                    $("exampleModalLabel").val(title);
+                    $("#reservation_table").html(content);
+                    $("#modal_id").val(user_id);
+
+                    $('#detailModal').modal('toggle');
+
+                }
+            });
+        
+            
+        }
+
+        $(".btn_close").click(function(){
+
+            $("#modal_content").val("");
+            $("#modal_id").val("");
+
+            $('#detailModal').modal('hide');
+
+
+        });
+
+        
     </script>
 
 @endsection

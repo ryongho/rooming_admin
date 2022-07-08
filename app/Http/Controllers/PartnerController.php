@@ -9,6 +9,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
 use PHPExcel; 
 use PHPExcel_IOFactory;
+use Illuminate\Support\Facades\DB;
 
 
 class PartnerController extends Controller
@@ -179,7 +180,10 @@ class PartnerController extends Controller
         }
         
         
-        $rows = User::where('user_type','1')
+        $rows = User::select('*',
+                    DB::raw('(select type from hotels where hotels.partner_id = users.id) as hotel_type'),
+                )
+                ->where('user_type','1')
                 ->when($start_date, function ($query, $start_date) {
                     return $query->where('created_at' ,">=", $start_date);
                 })

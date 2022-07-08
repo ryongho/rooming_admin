@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Hotel;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 use PHPExcel; 
 use PHPExcel_IOFactory;
 
@@ -186,6 +187,9 @@ class UserController extends Controller
         
         
         $rows = User::where('user_type','0')
+                ->select('*',
+                        DB::raw('(select count(*) from reservations where reservations.user_id = users.id) as reservation_cnt'),
+                )
                 ->when($start_date, function ($query, $start_date) {
                     return $query->where('created_at' ,">=", $start_date);
                 })
@@ -202,7 +206,7 @@ class UserController extends Controller
                 ->offset($offset)
                 ->orderBy('id', 'desc')
                 ->limit($row)->get();
-
+        
         $count = User::where('user_type','0')
                     ->when($start_date, function ($query, $start_date) {
                         return $query->where('created_at' ,">=", $start_date);

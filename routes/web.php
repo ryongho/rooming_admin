@@ -63,6 +63,9 @@ Route::middleware('auth:sanctum')->get('/delete_notice', [NoticeController::clas
 
 Route::middleware('auth:sanctum')->get('/save_faq', [FaqController::class, 'save'])->name('save_faq');
 Route::middleware('auth:sanctum')->get('/delete_faq', [FaqController::class, 'delete'])->name('delete_faq');
+Route::post('/get_reservation_list_by_user', [ReservationController::class, 'get_list_by_user'])->name('get_list_by_user');
+
+
 
 
 
