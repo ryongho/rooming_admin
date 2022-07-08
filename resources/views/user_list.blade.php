@@ -179,10 +179,13 @@
                 if(data.status == "200"){
                     
                     const title = data.user_info['name']+"님의 예약 내용";
-                    var content = "";
+                    let content = "";
 
                     data.data.forEach(function(row){
-                        content += "<tr><td>"+row['reservation_no']+"</td><td>"+row['goods_name']+"</td><td>"+row['created_at']+"</td><td>"+row['status']+"</td></tr>";
+
+                        let date = new Date(row['created_at']);
+                        let created_at = date.getFullYear()+"-"+date.getMonth()+"-"+date.getDate()+" "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
+                        content += "<tr><td>"+row['reservation_no']+"</td><td>"+row['goods_name']+"</td><td>"+created_at+"</td><td>"+row['status']+"</td></tr>";
                         
                     });
 
