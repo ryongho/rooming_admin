@@ -16,6 +16,7 @@ use App\Http\Controllers\RecommendController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\NoticeController;
 use App\Http\Controllers\FaqController;
+use App\Http\Controllers\LocalController;
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
@@ -64,6 +65,13 @@ Route::middleware('auth:sanctum')->get('/delete_notice', [NoticeController::clas
 Route::middleware('auth:sanctum')->get('/save_faq', [FaqController::class, 'save'])->name('save_faq');
 Route::middleware('auth:sanctum')->get('/delete_faq', [FaqController::class, 'delete'])->name('delete_faq');
 Route::post('/get_reservation_list_by_user', [ReservationController::class, 'get_list_by_user'])->name('get_list_by_user');
+
+Route::middleware('auth:sanctum')->get('/local_list', [LocalController::class, 'local_list'])->name('local_list');
+Route::middleware('auth:sanctum')->get('/update_local_addr', [LocalController::class, 'update_addr'])->name('update_local_addr');
+Route::middleware('auth:sanctum')->get('/update_local_orderno', [LocalController::class, 'update_orderno'])->name('update_local_orderno');
+Route::middleware('auth:sanctum')->post('/upload_local', [LocalController::class, 'upload_local'])->name('upload_local');
+Route::middleware('auth:sanctum')->get('/delete_local', [LocalController::class, 'delete'])->name('delete_local');
+
 
 
 

@@ -93,6 +93,7 @@
                         <a href="{{route('event_list')}}" class="dropdown-item">이벤트 관리</a> 
                         <a href="{{route('notice_list')}}" class="dropdown-item">공지사항 관리</a> 
                         <a href="{{route('faq_list')}}" class="dropdown-item">FAQ 관리</a> 
+                        <a href="{{route('local_list')}}" class="dropdown-item">지역 관리</a> 
                     </div>
                     <!--<a href="index.html" class="nav-item nav-link"><i class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
                     <div class="nav-item dropdown">
