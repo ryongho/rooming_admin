@@ -27,7 +27,9 @@
                             <option selected value="">전체</option>
                             <option value="N">가입자</option>
                             <option value="Y">탈퇴자</option>
+                            <option value="X">미등록</option>
                         </select>
+                        
                         <input type="hidden" id="temp_leave" value="{{$list->leave}}"/>
                         <input type="hidden" id="temp_search_type" value="{{$list->search_type}}"/>
                         <input type="text" id="datePicker-start" class="form-control" style="width:10%;float:left;margin-right:10px;" value="{{$list->start_date}}" />
@@ -62,7 +64,7 @@
                                             <td>{{ $data['name'] }}</td>
                                             <td>{{ $data['phone'] }}</td>
                                             <td>{{ $data['email'] }}</td>
-                                            <td>{{ $data['nickname'] }}</td>
+                                            <td>{{ $data['hotel_name'] }}</td>
                                             <td>{{ $data['created_at'] }}</td>
                                             <td>{{ $data['updated_at'] }}</td>
                                             <td>{{ $data['leave'] }}</td>

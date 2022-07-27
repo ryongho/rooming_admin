@@ -180,40 +180,59 @@ class PartnerController extends Controller
         }
         
         
-        $rows = User::select('*',
-                    DB::raw('(select type from hotels where hotels.partner_id = users.id) as hotel_type'),
+        $rows = User::leftJoin('hotels', 'users.id', '=', 'hotels.partner_id')
+                ->select('users.id as id',
+                        'users.name as name',
+                        'users.phone as phone',
+                        'users.email as email',
+                        'hotels.name as hotel_name',
+                        'users.leave as leave',
+                        'users.created_at as created_at',
+                        'users.updated_at as updated_at',
+                        'hotels.type as hotel_type',
                 )
                 ->where('user_type','1')
                 ->when($start_date, function ($query, $start_date) {
-                    return $query->where('created_at' ,">=", $start_date);
+                    return $query->where('users.created_at' ,">=", $start_date);
                 })
                 ->when($end_date, function ($query, $end_date) {
-                    return $query->where('created_at' ,"<=", $end_date);
+                    return $query->where('users.created_at' ,"<=", $end_date);
                 })
                 ->when($leave , function ($query, $leave) {
-                    return $query->where('leave', $leave);
+                    if($leave == "X"){
+                        return $query->whereNull('hotels.id');
+                    }else{
+                        return $query->where('users.leave', $leave);
+                    }
+                    
                 })
                 ->when($search , function ($query, $search) {
                     $search_arr = explode(',',$search);
-                    return $query->where($search_arr[0] ,"like", "%".$search_arr[1]."%");
+                    return $query->where('users.'.$search_arr[0] ,"like", "%".$search_arr[1]."%");
                 })
                 ->offset($offset)
-                ->orderBy('id', 'desc')
+                ->orderBy('users.id', 'desc')
                 ->limit($row)->get();
 
-        $count = User::where('user_type','1')
+        $count = User::leftJoin('hotels', 'users.id', '=', 'hotels.partner_id')
+                ->where('user_type','1')
                 ->when($start_date, function ($query, $start_date) {
-                    return $query->where('created_at' ,">=", $start_date);
+                    return $query->where('users.created_at' ,">=", $start_date);
                 })
                 ->when($end_date, function ($query, $end_date) {
-                    return $query->where('created_at' ,"<=", $end_date);
+                    return $query->where('users.created_at' ,"<=", $end_date);
                 })
                 ->when($leave , function ($query, $leave) {
-                    return $query->where('leave', $leave);
+                    if($leave == "X"){
+                        return $query->whereNull('hotels.id');
+                    }else{
+                        return $query->where('users.leave', $leave);
+                    }
+                    
                 })
                 ->when($search , function ($query, $search) {
                     $search_arr = explode(',',$search);
-                    return $query->where($search_arr[0] ,"like", "%".$search_arr[1]."%");
+                    return $query->where('users.'.$search_arr[0] ,"like", "%".$search_arr[1]."%");
                 })->count();
 
         $list = new \stdClass;

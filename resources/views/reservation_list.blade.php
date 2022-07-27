@@ -45,7 +45,7 @@
                                     <tr>
                                         <th scope="col">예약일</th>
                                         <th scope="col">회원 이름</th>
-                                        <th scope="col">예약자명</th>
+                                        <th scope="col">투숙객명</th>
                                         <th scope="col">연락처</th>
                                         <th scope="col">예약 숙소</th>
                                         <th scope="col">예약 객실</th> 

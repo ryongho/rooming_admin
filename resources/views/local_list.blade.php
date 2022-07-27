@@ -68,6 +68,7 @@
                                     <h6 class="modal-title" id="exampleModalLabel">경도</h6>
                                     <input type="text" class="form-control" name="longtitude" vaue=""/>
                                     <input type="file" class="form-control" name="image" value="">
+                                    <span style="color:red"> *** 500kb 이하 파일 가능</span>
                                 
                                 
                             </div>
