@@ -44,7 +44,8 @@
                                 <thead>
                                     <tr>
                                         <th scope="col">예약일</th>
-                                        <th scope="col">고객명</th>
+                                        <th scope="col">회원 이름</th>
+                                        <th scope="col">예약자명</th>
                                         <th scope="col">연락처</th>
                                         <th scope="col">예약 숙소</th>
                                         <th scope="col">예약 객실</th> 
@@ -59,6 +60,7 @@
                                     @forelse($list->data as $data)
                                         <tr>
                                             <td>{{ $data['created_at'] }}</td>
+                                            <td>{{ $data['user_name'] }}</td>
                                             <td>{{ $data['name'] }}</td>
                                             <td>{{ $data['phone'] }}</td>
                                             <td>{{ $data['hotel_name'] }}</td>
