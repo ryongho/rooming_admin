@@ -67,6 +67,7 @@
                                     <input type="text" class="form-control" name="latitude" vaue=""/>
                                     <h6 class="modal-title" id="exampleModalLabel">경도</h6>
                                     <input type="text" class="form-control" name="longtitude" vaue=""/>
+                                    <button type="button" class="btn btn-sm btn-primary" style="margin:10px;" onclick="go('https://www.google.com/maps/')">위도/경도 검색<</button>
                                     <input type="file" class="form-control" name="image" value="">
                                     <span style="color:red"> *** 500kb 이하 파일 가능</span>
                                 
@@ -100,6 +101,11 @@
         $().ready(function(){
 
         });
+
+        const go = function(url){
+
+            window.open(url,'위도/경도 검색','fullscreen=yes');
+        }
         
 
         const update_addr = function(id){
